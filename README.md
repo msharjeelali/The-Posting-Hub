@@ -19,4 +19,5 @@ Follow these steps to get started with The Posting Hub:
    git clone https://github.com/msharjeelali/The-Posting-Hub.git
 
 ## Prototyping
-- Access the Figma design [here]([link-to-figma-design](https://www.figma.com/design/amZvavsRQ12mhKqWrueJIv/Open--Community-?node-id=0-29&t=hklrbG0ZGVZYxtYB-1)).
+- Access the Figma design [here](https://www.figma.com/design/amZvavsRQ12mhKqWrueJIv/Open--Community-?node-id=0-29&t=hklrbG0ZGVZYxtYB-1).
+- link: https://www.figma.com/design/amZvavsRQ12mhKqWrueJIv/Open--Community-?node-id=0-29&t=hklrbG0ZGVZYxtYB-1
