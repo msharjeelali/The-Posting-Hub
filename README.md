@@ -18,6 +18,24 @@ Follow these steps to get started with The Posting Hub:
    ```bash
    git clone https://github.com/msharjeelali/The-Posting-Hub.git
 
+2. Install dependencies and Setup Project:
+   ```activat and deactivat venv
+   .\venv\Scripts\acitvate
+   deactivate
+   
+   ''' Make a new django project
+   django-admin startproject config_blog
+  
+   ```Start Your Django Project
+   python manage.py runserver
+   
+   ''' Make a new django app
+   python manage.py startapp app
+   
+
+3. Start the development server:
+
+
 ## Prototyping
 - Access the Figma design [here](https://www.figma.com/design/amZvavsRQ12mhKqWrueJIv/Open--Community-?node-id=0-29&t=hklrbG0ZGVZYxtYB-1).
 - link: https://www.figma.com/design/amZvavsRQ12mhKqWrueJIv/Open--Community-?node-id=0-29&t=hklrbG0ZGVZYxtYB-1
