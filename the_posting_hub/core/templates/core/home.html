@@ -1,129 +1,117 @@
 {% extends 'base.html' %}
 {% block title %}Home{% endblock %}
 {% block content %}
-  <section id="home-section">
-    <div class="text-center">
-      <h1>Welcome to The Posting Hub</h1>
-      <p>Connect. Share. Explore.</p>
-    </div>
-  </section>
-
-  <div class="border-top my-4"></div>
-
-  <section id="about-section">
-    <div class="text-center">
-      <h2>About Us</h2>
-      <p>At The Posting Hub, we believe in the power of authentic connections. Founded in 2025, our platform redefines social sharing by blending intuitive design with robust functionality. Whether you're here to spark meaningful conversations, showcase creativity, or stay updated with your community, we provide the tools to make every interaction seamless. Our team of innovators and tech enthusiasts is committed to maintaining a space that values privacy, inclusivity, and genuine engagement. Join thousands of users who trust us to turn moments into memories and connections into lasting relationships.
-      </p>
-    </div>
-  </section>
-
-  <div class="border-top my-4"></div>
-
-  <section id="team-section" class="team-section py-5">
-    <div class="container">
-        <h2 class="text-center mb-5 text-white">Our Team</h2>
-        
-        <div class="row g-4">
-            <!-- Team Member 1 -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="team-card text-center">
-                    <div class="image-wrapper mb-3">
-                        <img src="https://via.placeholder.com/300" alt="Team Member" class="img-fluid rounded-circle">
-                    </div>
-                    <h4 class="text-white">Noor ul Ain</h4>
-                    <p class="text-light">CEO & Founder</p>
-                </div>
-            </div>
-
-            <!-- Team Member 2 -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="team-card text-center">
-                    <div class="image-wrapper mb-3">
-                        <img src="https://via.placeholder.com/300" alt="Team Member" class="img-fluid rounded-circle">
-                    </div>
-                    <h4 class="text-white">Sharjeel Ali</h4>
-                    <p class="text-light">CTO</p>
-                </div>
-            </div>
-
-            <!-- Team Member 3 -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="team-card text-center">
-                    <div class="image-wrapper mb-3">
-                        <img src="../../../static/team-photos/anas-team-photo.jpg" alt="Team Member" class="img-fluid rounded-circle">
-                    </div>
-                    <h4 class="text-white">Anas Rahim</h4>
-                    <p class="text-light">Lead Developer</p>
-                </div>
-            </div>
-
-            <!-- Team Member 4 -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="team-card text-center">
-                    <div class="image-wrapper mb-3">
-                        <img src="../../../static/team-photos/eemaan-team-photo.png" alt="Team Member" class="img-fluid rounded-circle">
-                    </div>
-                    <h4 class="text-white">Eemaan ahmad</h4>
-                    <p class="text-light">Co-Founder</p>
-                </div>
-            </div>
-        </div>
-    </div>
+<section id="home-section">
+  <div class="text-center">
+    <h1>Welcome to The Posting Hub</h1>
+    <p>Share yout thoughts. Find what matters.</p>
+    <button class="btn">Create Post -></button>
+  </div>
 </section>
 
- <footer class="text-white py-4 mt-5">
-    <div class="container">
-      <div class="row">
-        <!-- App Name -->
-        <div class="col-md-4 mb-4 mb-md-0">
-          <h3 class="text-white">The Posting Hub</h3>
-          <a href="#" class="btn btn-outline-light">
-            <i class="fa-brands fa-facebook-f"></i>
-          </a>
-          <a href="#" class="btn btn-outline-light">
-            <i class="fa-brands fa-instagram"></i>
-          </a>
-          <a href="#" class="btn btn-outline-light">
-            <i class="fa-brands fa-twitter"></i>
-          </a>
-        </div>
-  
-        <!-- Contact Info -->
-        <div class="col-md-4 mb-4 mb-md-0">
-          <h5>Contact Us</h5>
-          <ul class="list-unstyled">
-            <li class="mb-2">
-              <i class="fas fa-map-marker-alt me-2"></i>
-              123 App Street, Tech City, TC 10001
-            </li>
-            <li class="mb-2">
-              <i class="fas fa-phone me-2"></i>
-              +1 (555) 123-4567
-            </li>
-            <li class="mb-2">
-              <i class="fas fa-envelope me-2"></i>
-              contact@thepostinghub.com
-            </li>
-          </ul>
-        </div>
-  
-        <!-- Quick Links -->
-        <div class="col-md-4">
-          <h5>Quick Links</h5>
-          <ul class="list-unstyled">
-            <li class="mb-2"><a href="#home-section" class="text-white text-decoration-none">Home</a></li>
-            <li class="mb-2"><a href="#about-section" class="text-white text-decoration-none">About</a></li>
-            <li class="mb-2"><a href="#team-section" class="text-white text-decoration-none">Our Team</a></li>
-          </ul>
-        </div>
-      </div>
-  
-      <!-- Copyright -->
-      <div class="text-center pt-3 border-top border-secondary">
-        <p class="mb-0 small text-white">@2025 The Posting Hub. All rights reserved.</p>
+<div class="line-break"></div>
+
+<section id="read-article-section">
+  <img src="../../../static/homepage/Latest Articles.png" alt="Home page read articles image" />
+</section>
+
+<section id="features-section">
+  <h2>WRITE.SHARE.INSPIRE</h2>
+  <p>Discover stories, express our thoughts, and connect with a community<br> that thrives on creativity.</p>
+  <div class="card-container">
+    <div class="card">
+      <img src="../../../static/homepage/Feature One.png" alt="Grow your advance">
+      <p>Grow your advance</p>
+      <p>Reach readers across the globe and build your writing community in one place.</p>
+    </div>
+    <div class="card">
+      <img src="../../../static/homepage/Feature Two.png" alt="Enagage deeply">
+      <p>Enagage Deeply</p>
+      <p>Connect through comments, likes, and personalized recommendations that keep the conversation going.</p>
+    </div>
+    <div class="card">
+      <img src="../../../static/homepage/Feature Three.png" alt="Create with clarify">
+      <p>Create with Clarity</p>
+      <p>Compose your thoughts effortlessly with intuitive tools that let your voice shine.</p>
+    </div>
+  </div>
+</section>
+
+<div class="line-break"></div>
+
+<section id="post-section">
+  <h2>What’s Trending Across the Hub</h2>
+  <p>From viral snapshots to powerful words, these posts are making waves.<br> Explore the top moments that are taking
+    over the community right now.</p>
+  <div class="card-container">
+    <div class="card">
+      <p>"I’ve tried several content generation tools, but this AI-driven tool is by far the best. It understands my
+        brand’s voice and consistently produces content that resonates with my audience!"</p>
+      <div><img src="../../../static/team-photos/anas-team-photo.jpg" alt="User Image">
+        <p>Anas Rahim</p>
       </div>
     </div>
-  </footer>
+
+    <div class="card">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae elit libero, a pharetra augue. Curabitur
+        blandit tempus porttitor. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet
+        fermentum.</p>
+      <div><img src="../../../static/team-photos/anas-team-photo.jpg" alt="User Image">
+        <p>Anas Rahim</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <p>Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia
+        nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur
+        tortor.</p>
+      <div><img src="../../../static/team-photos/anas-team-photo.jpg" alt="User Image">
+        <p>Anas Rahim</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <p>"I’ve tried several content generation tools, but this AI-driven tool is by far the best. It understands my
+        brand’s voice and consistently produces content that resonates with my audience!"</p>
+      <div><img src="../../../static/team-photos/anas-team-photo.jpg" alt="User Image">
+        <p>Anas Rahim</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about-section">
+  <h2>ABOUT US</h2>
+  <p>Need help, have feedback, or just want to say hi? Our team is always ready to hear from you.<br>
+    Let's connect and make your experience even better.</p>
+  <button class="btn">About Us</button>
+  <div class="card-container">
+    <div class="card">
+      <h3>Mission Statement</h3>
+      <p>Empowering voices through blogging. Connecting writers with readers.</p>
+    </div>
+    <div class="card">
+      <h3>Who We Are?</h3>
+      <p>We’re a small team of tech enthusiasts and writers who believe everyone has a story to share.</p>
+    </div>
+    <div class="card">
+      <h3>Our Core Values</h3>
+      <p>Transparency, creativity, inclusivity, and continuous growth — these are the principles we live by.</p>
+    </div>
+    <div class="card">
+      <h3>Why Choose Us</h3>
+      <p>Unlike other platforms, we focus on minimalism, community-driven content, and creative freedom.</p>
+    </div>
+  </div>
+</section>
+
+<div class="line-break"></div>
+
+<section id="contact-section">
+  <h2>Have Questions? We're Just a Click Away</h2>
+  <p>Need help, have feedback, or just want to say hi? Our team is always ready to hear from you.<br>
+    Let's connect and make your experience even better.</p>
+  <button class="btn">Contact Us</button>
+</section>
 
 {% endblock %}
