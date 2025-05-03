@@ -10,7 +10,10 @@
       <div class="card shadow mb-4">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
           <h2 class="mb-0">{{ page_title|default:"Your Feed" }}</h2>
-          <a href="{% url 'create_post' %}" class="btn btn-light">Create New Post</a>
+          <div class="justify-content-between align-items-center">
+            <!-- <a href="{% url 'create_post' %}" class="btn btn-light">Create New Post</a> -->
+            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+          </div>
         </div>
         <div class="card-body">
           <h3>Hello, {{ user.first_name|default:user.email }}!</h3>
@@ -22,7 +25,7 @@
                 <div class="card-header bg-info text-white">
                   <h4 class="mb-0">Your Profile</h4>
                 </div>
-                <div class="card-body text-center">
+                <div class="card-body">
                   <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
                   <p>Email: {{ user.email }}</p>
                   {% if user.profile.date_of_birth %}

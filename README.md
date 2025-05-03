@@ -20,7 +20,7 @@ Follow these steps to get started with The Posting Hub:
 
 2. Install dependencies and Setup Project:
    ```activat and deactivat venv
-   .\venv\Scripts\acitvate
+   .\venv\Scripts\activate
    deactivate
    
    ''' Make a new django project

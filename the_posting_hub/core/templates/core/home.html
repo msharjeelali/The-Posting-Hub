@@ -1,8 +1,129 @@
 {% extends 'base.html' %}
 {% block title %}Home{% endblock %}
 {% block content %}
-  <div class="text-center">
-    <h1>Welcome to The Posting Hub</h1>
-    <p>Connect. Share. Explore.</p>
-  </div>
+  <section id="home-section">
+    <div class="text-center">
+      <h1>Welcome to The Posting Hub</h1>
+      <p>Connect. Share. Explore.</p>
+    </div>
+  </section>
+
+  <div class="border-top my-4"></div>
+
+  <section id="about-section">
+    <div class="text-center">
+      <h2>About Us</h2>
+      <p>At The Posting Hub, we believe in the power of authentic connections. Founded in 2025, our platform redefines social sharing by blending intuitive design with robust functionality. Whether you're here to spark meaningful conversations, showcase creativity, or stay updated with your community, we provide the tools to make every interaction seamless. Our team of innovators and tech enthusiasts is committed to maintaining a space that values privacy, inclusivity, and genuine engagement. Join thousands of users who trust us to turn moments into memories and connections into lasting relationships.
+      </p>
+    </div>
+  </section>
+
+  <div class="border-top my-4"></div>
+
+  <section id="team-section" class="team-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5 text-white">Our Team</h2>
+        
+        <div class="row g-4">
+            <!-- Team Member 1 -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="team-card text-center">
+                    <div class="image-wrapper mb-3">
+                        <img src="https://via.placeholder.com/300" alt="Team Member" class="img-fluid rounded-circle">
+                    </div>
+                    <h4 class="text-white">Noor ul Ain</h4>
+                    <p class="text-light">CEO & Founder</p>
+                </div>
+            </div>
+
+            <!-- Team Member 2 -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="team-card text-center">
+                    <div class="image-wrapper mb-3">
+                        <img src="https://via.placeholder.com/300" alt="Team Member" class="img-fluid rounded-circle">
+                    </div>
+                    <h4 class="text-white">Sharjeel Ali</h4>
+                    <p class="text-light">CTO</p>
+                </div>
+            </div>
+
+            <!-- Team Member 3 -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="team-card text-center">
+                    <div class="image-wrapper mb-3">
+                        <img src="../../../static/team-photos/anas-team-photo.jpg" alt="Team Member" class="img-fluid rounded-circle">
+                    </div>
+                    <h4 class="text-white">Anas Rahim</h4>
+                    <p class="text-light">Lead Developer</p>
+                </div>
+            </div>
+
+            <!-- Team Member 4 -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="team-card text-center">
+                    <div class="image-wrapper mb-3">
+                        <img src="../../../static/team-photos/eemaan-team-photo.png" alt="Team Member" class="img-fluid rounded-circle">
+                    </div>
+                    <h4 class="text-white">Eemaan ahmad</h4>
+                    <p class="text-light">Co-Founder</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+ <footer class="text-white py-4 mt-5">
+    <div class="container">
+      <div class="row">
+        <!-- App Name -->
+        <div class="col-md-4 mb-4 mb-md-0">
+          <h3 class="text-white">The Posting Hub</h3>
+          <a href="#" class="btn btn-outline-light">
+            <i class="fa-brands fa-facebook-f"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light">
+            <i class="fa-brands fa-twitter"></i>
+          </a>
+        </div>
+  
+        <!-- Contact Info -->
+        <div class="col-md-4 mb-4 mb-md-0">
+          <h5>Contact Us</h5>
+          <ul class="list-unstyled">
+            <li class="mb-2">
+              <i class="fas fa-map-marker-alt me-2"></i>
+              123 App Street, Tech City, TC 10001
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-phone me-2"></i>
+              +1 (555) 123-4567
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-envelope me-2"></i>
+              contact@thepostinghub.com
+            </li>
+          </ul>
+        </div>
+  
+        <!-- Quick Links -->
+        <div class="col-md-4">
+          <h5>Quick Links</h5>
+          <ul class="list-unstyled">
+            <li class="mb-2"><a href="#home-section" class="text-white text-decoration-none">Home</a></li>
+            <li class="mb-2"><a href="#about-section" class="text-white text-decoration-none">About</a></li>
+            <li class="mb-2"><a href="#team-section" class="text-white text-decoration-none">Our Team</a></li>
+          </ul>
+        </div>
+      </div>
+  
+      <!-- Copyright -->
+      <div class="text-center pt-3 border-top border-secondary">
+        <p class="mb-0 small text-white">@2025 The Posting Hub. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
 {% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }} - The Posting Hub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">{{ page_title }}</h2>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="mb-4">
+                        <div class="input-group">
+                            {{ form.query }}
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+
+                    {% if query %}
+                        <h3>Search Results for "{{ query }}"</h3>
+                        
+                        {% if results.users %}
+                            <div class="mb-4">
+                                <h4>Users</h4>
+                                <div class="list-group">
+                                    {% for user in results.users %}
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                                                <small>@{{ user.username }}</small>
+                                            </div>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if results.posts %}
+                            <div class="mb-4">
+                                <h4>Posts</h4>
+                                <div class="list-group">
+                                    {% for post in results.posts %}
+                                        <div class="list-group-item">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h5 class="mb-1">{{ post.title }}</h5>
+                                                <small>{{ post.created_at|date:"F j, Y" }}</small>
+                                            </div>
+                                            <p class="mb-1">{{ post.content|truncatewords:30 }}</p>
+                                            <small>By {{ post.author.get_full_name|default:post.author.username }}</small>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if not results.users and not results.posts %}
+                            <div class="alert alert-info">
+                                No results found for "{{ query }}"
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-info">
+                            Enter a search term to find users and posts
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

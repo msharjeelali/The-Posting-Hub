@@ -1,8 +1,10 @@
+from django.contrib.auth import logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth.models import User
 from .models import Post
-from .forms import PostForm
+from .forms import PostForm, SearchForm
 # Create your views here.
 # social/views.py
 
@@ -40,3 +42,43 @@ def create_post(request):
         form = PostForm()
     
     return render(request, 'social/create_post.html', {'form': form, 'page_title': 'Create New Post'})
+
+@login_required
+def search(request):
+    form = SearchForm(request.GET)
+    results = {'users': [], 'posts': []}
+    
+    if form.is_valid():
+        query = form.cleaned_data['query']
+        
+        # Search for users
+        users = User.objects.filter(
+            username__icontains=query
+        ) | User.objects.filter(
+            first_name__icontains=query
+        ) | User.objects.filter(
+            last_name__icontains=query
+        )
+        results['users'] = users
+        
+        # Search for posts
+        posts = Post.objects.filter(
+            title__icontains=query
+        ) | Post.objects.filter(
+            content__icontains=query
+        )
+        results['posts'] = posts
+    
+    context = {
+        'form': form,
+        'results': results,
+        'query': request.GET.get('query', ''),
+        'page_title': 'Search Results'
+    }
+    return render(request, 'social/search.html', context)
+
+@login_required
+def logout_user(request):
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('/')
