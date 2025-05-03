@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ page_title|default:"Your Feed" }} - The Posting Hub{% endblock %}
 
@@ -154,8 +155,15 @@
                           <h5 class="text-primary mb-0">{{ post.title }}</h5>
                           <div class="btn-group">
                             <!-- <button class="btn glass-btn-outline btn-sm">Edit</button> -->
-                            <a href="{% url 'edit_post' post.id %}" class="btn glass-btn-outline btn-sm">Edit</a>
-                            <button class="btn glass-btn-outline btn-sm">Delete</button>
+                            <a href="{% url 'edit_post' post.id %}" class="btn glass-btn-outline btn-sm"><i class="fas fa-edit"></i></a>
+                            <!-- <button class="btn glass-btn-outline btn-sm">Delete</button> -->
+                            <form method="post" action="{% url 'delete_post' post.id %}" class="d-inline">
+                              {% csrf_token %}
+                              <button type="submit" class="btn glass-btn-outline btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this post?')">
+                                <span class="material-icons">delete</span>
+                              </button>
+                            </form>
                           </div>
                         </div>
                         <p class="mb-2">{{ post.content }}</p>

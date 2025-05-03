@@ -101,56 +101,6 @@ def logout_user(request):
     messages.success(request, 'You have been logged out successfully.')
     return redirect('/')
 
-# @login_required
-# def edit_profile(request):
-#     # ---------------------------------------
-#     # if request.method == 'POST':
-#     #     form = UserProfileForm(request.POST, instance=request.user.profile)
-#     #     if form.is_valid():
-#     #         form.save()
-#     #         messages.success(request, 'Your profile was successfully updated!')
-#     #         return redirect('dashboard')
-#     #     else:
-#     #         messages.error(request, 'Please correct the errors below.')
-#     # else:
-#     #     form = UserProfileForm(instance=request.user.profile)
-#     # context = {
-#     #     'form': form,
-#     #     'page_title': 'Edit Profile'
-#     # }
-#     # return render(request, 'social/edit_profile.html', context)
-#     # ---------------------------------------
-#     if request.method == 'POST':
-#         user_form = UserEditForm(request.POST, instance=request.user)
-#         profile_form = UserProfileForm(request.POST, instance=request.user.profile)
-#         password_form = CustomPasswordChangeForm(user=request.user, data=request.POST)
-        
-#         if 'user_info' in request.POST and user_form.is_valid():
-#             user_form.save()
-#             messages.success(request, 'Your profile information was updated!')
-#             return redirect('edit_profile')
-            
-#         if 'profile_info' in request.POST and profile_form.is_valid():
-#             profile_form.save()
-#             messages.success(request, 'Your profile details were updated!')
-#             return redirect('edit_profile')
-            
-#         if 'change_password' in request.POST and password_form.is_valid():
-#             password_form.save()
-#             update_session_auth_hash(request, password_form.user)
-#             messages.success(request, 'Your password was successfully updated!')
-#             return redirect('edit_profile')
-#     else:
-#         user_form = UserEditForm(instance=request.user)
-#         profile_form = UserProfileForm(instance=request.user.profile)
-#         password_form = CustomPasswordChangeForm(user=request.user)
-    
-#     return render(request, 'social/edit_profile.html', {
-#         'user_form': user_form,
-#         'profile_form': profile_form,
-#         'password_form': password_form,
-#     })
-# views.py
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
@@ -189,3 +139,15 @@ def edit_profile(request):
         'profile_form': profile_form,
         'password_form': password_form,
     })
+
+@login_required
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, author=request.user)
+    
+    if request.method == 'POST':
+        post.delete()
+        messages.success(request, 'Post deleted successfully!')
+        return redirect('dashboard')
+    
+    # If not POST, show confirmation (optional)
+    return render(request, 'social/confirm_delete.html', {'post': post})
