@@ -1,78 +1,176 @@
-<!-- dashboard.html -->
 {% extends 'base.html' %}
 
 {% block title %}{{ page_title|default:"Your Feed" }} - The Posting Hub{% endblock %}
 
 {% block content %}
-<div class="container">
+<style>
+  .glass-panel {
+    background: rgba(15, 23, 42, 0.7);
+    /* Stone-900 with transparency */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    color: #E2E8F0;
+    /* Stone-200 */
+  }
+
+  .glass-header {
+    background: rgba(30, 41, 59, 0.6) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #F8FAFC !important;
+    padding-right: 0.75rem;
+    /* Stone-50 */
+  }
+
+  .glass-card {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover {
+    background: rgba(30, 41, 59, 0.7);
+    transform: translateY(-2px);
+  }
+
+  .glass-btn {
+    background: rgba(79, 70, 229, 0.7);
+    /* Indigo-600 */
+    color: white;
+    border: none;
+    transition: all 0.2s ease;
+  }
+
+  .glass-btn:hover {
+    background: rgba(99, 102, 241, 0.9);
+    /* Indigo-500 */
+    transform: translateY(-1px);
+    color: white;
+  }
+
+  .glass-btn-outline {
+    background: transparent;
+    border: 1px solid rgba(99, 102, 241, 0.5);
+    color: #6366F1;
+  }
+
+  .glass-btn-outline:hover {
+    background: rgba(99, 102, 241, 0.2);
+    color: #818CF8;
+  }
+
+  .text-primary {
+    color: #818CF8 !important;
+    /* Indigo-400 */
+  }
+
+  .text-muted {
+    color: #94A3B8 !important;
+    /* Stone-400 */
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .profile-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .profile-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .section-heading {
+    padding: 0.75rem 1.5rem;
+    /* Vertical and horizontal padding */
+  }
+</style>
+
+<div class="container py-5">
   <div class="row">
-    <div class="col-md-12">
-      <div class="card shadow mb-4">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-          <h2 class="mb-0">{{ page_title|default:"Your Feed" }}</h2>
-          <div class="justify-content-between align-items-center">
-            <!-- <a href="{% url 'create_post' %}" class="btn btn-light">Create New Post</a> -->
+    <div class="col-lg-12">
+      <div class="glass-panel mb-5">
+        <!-- Main Header -->
+        <div class="card-header glass-header d-flex justify-content-between align-items-center py-3">
+          <h2 class="mb-0 section-heading">{{ page_title|default:"Your Feed" }}</h2>
+          <div>
             <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
           </div>
         </div>
+
         <div class="card-body">
-          <h3>Hello, {{ user.first_name|default:user.email }}!</h3>
-          <p>Welcome to your personal feed where you can see and create blog posts.</p>
-          
-          <div class="row mt-4">
-            <div class="col-md-4">
-              <div class="card mb-4">
-                <div class="card-header bg-info text-white">
-                  <h4 class="mb-0">Your Profile</h4>
+          <h3 class="mb-4">Hello, <span class="text-primary">{{ user.first_name|default:user.email }}</span>!</h3>
+
+          <div class="row g-4">
+            <!-- Left Column -->
+            <div class="col-lg-4">
+              <!-- Profile Card -->
+              <div class="glass-card h-100">
+                <div class="card-header glass-header">
+                  <h4 class="mb-0 section-heading">Your Profile</h4>
                 </div>
                 <div class="card-body">
-                  <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
-                  <p>Email: {{ user.email }}</p>
-                  {% if user.profile.date_of_birth %}
-                    <p>Date of Birth: {{ user.profile.date_of_birth }}</p>
-                  {% endif %}
-                  <a href="#" class="btn btn-outline-primary mt-2">Edit Profile</a>
-                </div>
-              </div>
-              
-              <div class="card">
-                <div class="card-header bg-success text-white">
-                  <h4 class="mb-0">Quick Stats</h4>
-                </div>
-                <div class="card-body text-center">
-                  <p>Posts: {{ posts.count }}</p>
-                  <p>Followers: 0</p>
-                  <p>Following: 0</p>
+                  <div class="profile-section">
+                    <h5 class="text-primary mb-3">Personal Info</h5>
+                    <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    {% if user.profile.date_of_birth %}
+                    <p><strong>Date of Birth:</strong> {{ user.profile.date_of_birth }}</p>
+                    {% endif %}
+                    {% if user.profile.bio %}
+                    <div class="profile-section">
+                      <p><strong>Bio:</strong> {{ user.profile.bio }}</p>
+                    </div>
+                    {% endif %}
+                    <a href="{% url 'edit_profile' %}" class="btn glass-btn w-50 mt-3">Edit Profile</a>
+                  </div>
                 </div>
               </div>
             </div>
-            
-            <div class="col-md-8">
-              <div class="card">
-                <div class="card-header bg-secondary text-white">
-                  <h4 class="mb-0">Your Posts</h4>
+
+            <!-- Right Column -->
+            <div class="col-lg-8">
+              <!-- Posts Card -->
+              <div class="glass-card h-100">
+                <div class="card-header glass-header d-flex justify-content-between align-items-center">
+                  <h4 class="mb-0 section-heading">Your Posts</h4>
                 </div>
+
                 <div class="card-body">
                   {% if posts %}
+                  <div class="row g-3">
                     {% for post in posts %}
-                      <div class="card mb-3">
-                        <div class="card-body">
-                          <h5 class="card-title">{{ post.title }}</h5>
-                          <p class="card-text">{{ post.content }}</p>
-                          <p class="text-muted">Posted on {{ post.created_at }}</p>
+                    <div class="col-12">
+                      <div class="glass-card p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                          <h5 class="text-primary mb-0">{{ post.title }}</h5>
                           <div class="btn-group">
-                            <button class="btn btn-sm btn-outline-primary">Edit</button>
-                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                            <!-- <button class="btn glass-btn-outline btn-sm">Edit</button> -->
+                            <a href="{% url 'edit_post' post.id %}" class="btn glass-btn-outline btn-sm">Edit</a>
+                            <button class="btn glass-btn-outline btn-sm">Delete</button>
                           </div>
                         </div>
+                        <p class="mb-2">{{ post.content }}</p>
+                        <p class="text-muted small mb-0">Posted on {{ post.created_at|date:"M d, Y" }}</p>
                       </div>
-                    {% endfor %}
-                  {% else %}
-                    <div class="text-center py-4">
-                      <h5>You haven't created any posts yet</h5>
-                      <p>Start sharing your thoughts with the community!</p>
-                      <a href="{% url 'create_post' %}" class="btn btn-primary">Create Your First Post</a>
                     </div>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  <div class="text-center py-5">
+                    <i class="bi bi-file-earmark-text display-4 text-muted mb-3"></i>
+                    <h4 class="text-primary">No Posts Yet</h4>
+                    <p class="text-muted">Start sharing your thoughts with the community</p>
+                    <a href="{% url 'create_post' %}" class="btn glass-btn mt-2">Create Your First Post</a>
+                  </div>
                   {% endif %}
                 </div>
               </div>

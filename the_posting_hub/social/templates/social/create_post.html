@@ -1,39 +1,140 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ page_title }} - The Posting Hub{% endblock %}
+{% block title %}{{ page_title|default:"Create Post" }} - The Posting Hub{% endblock %}
 
 {% block content %}
-<div class="container">
+<style>
+    .glass-container {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        color: #E2E8F0;
+    }
+    
+    .glass-header {
+        background: rgba(30, 41, 59, 0.6) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #F8FAFC !important;
+        padding: 1.25rem !important;
+    }
+    
+    .glass-form-control {
+        background: rgba(30, 41, 59, 0.5) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+        padding: 0.75rem 1rem !important;
+    }
+    
+    .glass-form-control:focus {
+        background: rgba(30, 41, 59, 0.7) !important;
+        border-color: rgba(99, 102, 241, 0.5) !important;
+        box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25) !important;
+        color: white !important;
+    }
+    
+    .glass-btn-primary {
+        background: rgba(79, 70, 229, 0.8) !important;
+        border: none !important;
+        padding: 0.75rem !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    .glass-btn-primary:hover {
+        background: rgba(99, 102, 241, 0.9) !important;
+        transform: translateY(-1px);
+    }
+    
+    .glass-btn-outline {
+        background: transparent !important;
+        border: 1px solid rgba(99, 102, 241, 0.5) !important;
+        color: #6366F1 !important;
+    }
+    
+    .glass-btn-outline:hover {
+        background: rgba(99, 102, 241, 0.15) !important;
+        color: #818CF8 !important;
+    }
+    
+    .form-text {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+    
+    .text-danger {
+        color: #FCA5A5 !important;
+    }
+</style>
+
+<div class="container py-5">
   <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-          <h2 class="text-center mb-0">{{ page_title }}</h2>
+    <div class="col-lg-8">
+      <div class="glass-container overflow-hidden">
+        <!-- Header -->
+        <div class="glass-header text-center">
+          <h2 class="mb-0">{{ page_title|default:"Create Post" }}</h2>
         </div>
-        <div class="card-body">
+        
+        <!-- Form Body -->
+        <div class="p-4">
+          <!-- Messages -->
           {% if messages %}
             {% for message in messages %}
-              <div class="alert alert-{{ message.tags }}">
+              <div class="alert glass-container mb-4 border-{% if message.tags == 'error' %}danger{% else %}success{% endif %}">
                 {{ message }}
               </div>
             {% endfor %}
           {% endif %}
           
-          <form method="post">
+          <!-- Form -->
+          <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
+            
             {% for field in form %}
-              <div class="mb-3">
-                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                {{ field.errors }}
-                {{ field }}
-                {% if field.help_text %}
-                  <div class="form-text">{{ field.help_text }}</div>
-                {% endif %}
-              </div>
+            <div class="mb-4">
+              <label for="{{ field.id_for_label }}" class="form-label mb-2">{{ field.label }}</label>
+              
+              {% if field.name == 'content' %}
+                <textarea 
+                  name="{{ field.name }}"
+                  id="{{ field.id_for_label }}"
+                  class="form-control glass-form-control"
+                  rows="6"
+                  placeholder="Write your post content here..."
+                >{{ field.value|default:'' }}</textarea>
+              {% else %}
+                <input 
+                  type="{{ field.field.widget.input_type }}"
+                  name="{{ field.name }}"
+                  id="{{ field.id_for_label }}"
+                  class="form-control glass-form-control"
+                  value="{{ field.value|default:'' }}"
+                  placeholder="Enter {{ field.label|lower }}"
+                >
+              {% endif %}
+              
+              {% if field.errors %}
+                <div class="mt-2">
+                  {% for error in field.errors %}
+                    <small class="text-danger">{{ error }}</small>
+                  {% endfor %}
+                </div>
+              {% endif %}
+              
+              {% if field.help_text %}
+                <div class="form-text mt-2">{{ field.help_text }}</div>
+              {% endif %}
+            </div>
             {% endfor %}
-            <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-primary">Create Post</button>
-              <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+            
+            <!-- Form Buttons -->
+            <div class="d-grid gap-3 mt-4">
+              <button type="submit" class="btn glass-btn-primary py-2">
+                {% if is_edit %}Update Post{% else %}Create Post{% endif %}
+              </button>
+              <a href="{% url 'dashboard' %}" class="btn glass-btn-outline py-2">Cancel</a>
             </div>
           </form>
         </div>
@@ -41,4 +142,18 @@
     </div>
   </div>
 </div>
-{% endblock %} 
+
+<script>
+    // Add transition effects
+    document.querySelectorAll('.glass-btn-primary, .glass-btn-outline').forEach(btn => {
+        btn.style.transition = 'all 0.3s ease';
+    });
+    
+    // Add focus effects
+    document.querySelectorAll('.glass-form-control').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.style.transition = 'all 0.3s ease';
+        });
+    });
+</script>
+{% endblock %}

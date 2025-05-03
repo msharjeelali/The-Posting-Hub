@@ -32,6 +32,17 @@
     color: white;
   }
 
+  html {
+    scroll-behavior: smooth;
+}
+
+/* Better font rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
   .team-section {
     background: inherit; /* Matches body background */
     position: relative;

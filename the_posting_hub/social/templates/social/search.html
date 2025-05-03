@@ -1,73 +1,173 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ page_title }} - The Posting Hub{% endblock %}
+{% block title %}{{ page_title|default:"Search" }} - The Posting Hub{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">{{ page_title }}</h2>
+<style>
+    .glass-container {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        color: #E2E8F0;
+    }
+
+    .glass-header {
+        background: rgba(30, 41, 59, 0.6) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #F8FAFC !important;
+        padding: 1.25rem !important;
+    }
+
+    .glass-form-control {
+        background: rgba(30, 41, 59, 0.5) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+        padding: 0.75rem 1rem !important;
+    }
+
+    .glass-form-control:focus {
+        background: rgba(30, 41, 59, 0.7) !important;
+        border-color: rgba(99, 102, 241, 0.5) !important;
+        box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25) !important;
+    }
+
+    .glass-btn-primary {
+        background: rgba(79, 70, 229, 0.8) !important;
+        border: none !important;
+        padding: 0.75rem 1.5rem !important;
+        font-weight: 500 !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .glass-btn-primary:hover {
+        background: rgba(99, 102, 241, 0.9) !important;
+        transform: translateY(-1px);
+    }
+
+    .glass-list-item {
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #E2E8F0;
+        margin-bottom: 0.5rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .glass-list-item:hover {
+        background: rgba(30, 41, 59, 0.6);
+        transform: translateY(-2px);
+    }
+
+    .glass-alert {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #E2E8F0;
+        border-radius: 0.5rem;
+    }
+
+    .text-muted {
+        color: #94A3B8 !important;
+    }
+
+    .section-title {
+        color: #818CF8;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="glass-container overflow-hidden">
+                <!-- Header -->
+                <div class="glass-header">
+                    <h2 class="mb-0">{{ page_title|default:"Search" }}</h2>
                 </div>
-                <div class="card-body">
+
+                <!-- Search Form -->
+                <div class="p-4 border-bottom border-light border-opacity-10">
                     <form method="get" class="mb-4">
                         <div class="input-group">
-                            {{ form.query }}
-                            <button type="submit" class="btn btn-primary">Search</button>
+                            <input type="text" name="query" class="form-control glass-form-control"
+                                placeholder="Search users and posts..." value="{{ query|default:'' }}"
+                                aria-label="Search">
+                            <button type="submit" class="btn glass-btn-primary">
+                                <i class="bi bi-search me-2"></i> Search
+                            </button>
                         </div>
                     </form>
+                </div>
 
+                <!-- Results Section -->
+                <div class="p-4">
                     {% if query %}
-                        <h3>Search Results for "{{ query }}"</h3>
-                        
-                        {% if results.users %}
-                            <div class="mb-4">
-                                <h4>Users</h4>
-                                <div class="list-group">
-                                    {% for user in results.users %}
-                                        <a href="#" class="list-group-item list-group-item-action">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
-                                                <small>@{{ user.username }}</small>
-                                            </div>
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endif %}
+                    <h3 class="glass-content mb-4">Results for "{{ query }}"</h3>
 
-                        {% if results.posts %}
-                            <div class="mb-4">
-                                <h4>Posts</h4>
-                                <div class="list-group">
-                                    {% for post in results.posts %}
-                                        <div class="list-group-item">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h5 class="mb-1">{{ post.title }}</h5>
-                                                <small>{{ post.created_at|date:"F j, Y" }}</small>
-                                            </div>
-                                            <p class="mb-1">{{ post.content|truncatewords:30 }}</p>
-                                            <small>By {{ post.author.get_full_name|default:post.author.username }}</small>
-                                        </div>
-                                    {% endfor %}
+                    <!-- Users Results -->
+                    {% if results.users %}
+                    <div class="mb-5">
+                        <h4 class="section-title">Users</h4>
+                        <div class="list-group">
+                            {% for user in results.users %}
+                            <a href="#" class="glass-list-item list-group-item list-group-item-action p-3">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                                        <small class="text-muted">@{{ user.username }}</small>
+                                    </div>
+                                    <i class="bi bi-arrow-right-short text-primary"></i>
                                 </div>
-                            </div>
-                        {% endif %}
-
-                        {% if not results.users and not results.posts %}
-                            <div class="alert alert-info">
-                                No results found for "{{ query }}"
-                            </div>
-                        {% endif %}
-                    {% else %}
-                        <div class="alert alert-info">
-                            Enter a search term to find users and posts
+                            </a>
+                            {% endfor %}
                         </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Posts Results -->
+                    {% if results.posts %}
+                    <div class="mb-4">
+                        <h4 class="section-title">Posts</h4>
+                        <div class="list-group">
+                            {% for post in results.posts %}
+                            <div class="glass-list-item list-group-item p-3 mb-2">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-2">{{ post.title }}</h5>
+                                    <small class="text-muted">{{ post.created_at|date:"F j, Y" }}</small>
+                                </div>
+                                <p class="mb-2">{{ post.content|truncatewords:30 }}</p>
+                                <small class="text-muted">
+                                    By {{ post.author.get_full_name|default:post.author.username }}
+                                </small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- No Results -->
+                    {% if not results.users and not results.posts %}
+                    <div class="glass-alert p-3 text-center">
+                        <i class="bi bi-search-heart display-6 text-muted mb-3"></i>
+                        <h4>No results found</h4>
+                        <p class="mb-0">We couldn't find any matches for "{{ query }}"</p>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <!-- Empty Search State -->
+                    <div class="glass-alert p-4 text-center">
+                        <i class="bi bi-search display-4 text-muted mb-3"></i>
+                        <h4>Start Searching</h4>
+                        <p>Find users and posts by entering a search term above</p>
+                    </div>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}

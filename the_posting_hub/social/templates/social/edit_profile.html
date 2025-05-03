@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .blurred-form {
+        background: rgba(15, 23, 42, 0.7); /* Semi-transparent white */
+        backdrop-filter: blur(10px); /* Blur effect */
+        -webkit-backdrop-filter: blur(10px); /* For Safari */
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.18); /* Subtle border */
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    }
+    
+    .form-control, .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+    
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .form-label {
+        color: white;
+        font-weight: 500;
+    }
+    
+    .section-header {
+        color: white;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .glass-btn-primary {
+        background: rgba(79, 70, 229, 0.8) !important;
+        border: none !important;
+        padding: 0.75rem !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    .glass-btn-primary:hover {
+        background: rgba(99, 102, 241, 0.9) !important;
+        transform: translateY(-1px);
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card blurred-form border-0 py-4 px-3">
+                <div class="card-body">
+                    <h3 class="text-center text-white mb-4">Edit Profile</h3>
+                    
+                    <form method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Personal Information -->
+                        <h5 class="mb-3 pb-2 section-header">Personal Information</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" value="{{ request.user.email }}" class="form-control" placeholder="Your email">
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                <input type="text" name="first_name" value="{{ request.user.first_name }}" class="form-control" placeholder="First name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" name="last_name" value="{{ request.user.last_name }}" class="form-control" placeholder="Last name">
+                            </div>
+                        </div>
+                        
+                        <!-- Profile Details -->
+                        <h5 class="mt-4 mb-3 pb-2 section-header">Profile Details</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" name="date_of_birth" value="{{ request.user.profile.date_of_birth|date:'Y-m-d' }}" class="form-control">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Bio</label>
+                            <textarea name="bio" class="form-control" rows="4" placeholder="Tell us about yourself">{{ request.user.profile.bio }}</textarea>
+                        </div>
+                        
+                        <!-- Optional Password Change -->
+                        <h5 class="mt-4 mb-3 pb-2 section-header">Password Change (Optional)</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" name="old_password" class="form-control" placeholder="Leave blank to keep current">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" name="new_password1" class="form-control" placeholder="Leave blank to keep current">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" name="new_password2" class="form-control" placeholder="Leave blank to keep current">
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn glass-btn-primary btn-outline-light">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
