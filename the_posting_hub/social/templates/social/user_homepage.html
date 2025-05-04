@@ -1,0 +1,113 @@
+<style>
+.glass-btn-outline {
+    background: rgba(99, 102, 241, 0.15) !important;
+    color: #fff !important;
+    border: 1px solid #6366F1 !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    transition: background 0.2s, color 0.2s;
+}
+.glass-btn-outline:hover {
+    background: #6366F1 !important;
+    color: #fff !important;
+}
+.glass-btn-primary {
+    background: linear-gradient(90deg, #6366F1 60%, #818CF8 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.glass-btn-primary:hover {
+    background: linear-gradient(90deg, #818CF8 60%, #6366F1 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
+}
+/* Heart (like) icon styles */
+.like-icon {
+    color: #6366F1;
+    font-size: 1.2rem;
+    vertical-align: middle;
+    transition: color 0.2s;
+}
+.like-icon.liked {
+    color: #60A5FA;
+}
+.like-icon:hover {
+    color: #818CF8;
+}
+/* Minimalistic card and count styles */
+.glass-card {
+    border-radius: 1rem;
+    box-shadow: 0 2px 16px 0 rgba(30,41,59,0.18);
+    border: 1px solid rgba(99,102,241,0.08);
+    background: rgba(30,41,59,0.6);
+    transition: box-shadow 0.2s, border 0.2s;
+}
+.glass-card:hover {
+    box-shadow: 0 6px 32px 0 rgba(99,102,241,0.18);
+    border: 1.5px solid #6366F1;
+}
+.count-badge {
+    background: rgba(99,102,241,0.15);
+    color: #60A5FA;
+    border-radius: 1rem;
+    padding: 0.2em 0.8em;
+    font-size: 0.95em;
+    font-weight: 500;
+    margin-right: 0.5em;
+    display: inline-block;
+}
+</style>
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - The Posting Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">All Posts</h2>
+    <div class="row g-4">
+        {% for item in post_data %}
+        <div class="col-lg-6">
+            <div class="glass-card p-4 mb-4">
+                <h4 class="text-primary">{{ item.post.title }}</h4>
+                <p class="mb-1"><strong>By:</strong> {{ item.post.author.get_full_name|default:item.post.author.username }}</p>
+                <p class="mb-2 small" style="color: #818CF8;"><i class="fa fa-calendar-alt me-1"></i>{{ item.post.created_at|date:"M d, Y H:i" }}</p>
+                <div class="mb-2 d-flex align-items-center gap-3">
+                    <span class="count-badge"><i class="fa fa-heart like-icon{% if item.user_liked %} liked{% endif %}"></i> {{ item.likes_count }} Likes</span>
+                    <span class="count-badge"><i class="fa fa-comment"></i> {{ item.comments_count }} Comments</span>
+                </div>
+                <div class="d-flex gap-2 mt-2">
+                    <form method="post" action="{% url 'like_post' item.post.id %}">
+                        {% csrf_token %}
+                        {% if item.user_liked %}
+                            <button type="submit" class="btn glass-btn-outline btn-sm"><i class="fa fa-heart"></i> Unlike</button>
+                        {% else %}
+                            <button type="submit" class="btn glass-btn-outline btn-sm"><i class="fa fa-heart"></i> Like</button>
+                        {% endif %}
+                    </form>
+                    <form method="post" action="{% url 'bookmark_post' item.post.id %}">
+                        {% csrf_token %}
+                        {% if item.user_bookmarked %}
+                            <button type="submit" class="btn glass-btn-outline btn-sm"><i class="fa fa-bookmark-o"></i> Unbookmark</button>
+                        {% else %}
+                            <button type="submit" class="btn glass-btn-outline btn-sm"><i class="fa fa-bookmark-o"></i> Bookmark</button>
+                        {% endif %}
+                    </form>
+                    <a href="{% url 'add_comment' item.post.id %}" class="btn glass-btn-outline btn-sm"><i class="fa fa-comment"></i> Comment</a>
+                    <a href="{% url 'view_post' item.post.id %}" class="btn glass-btn-primary btn-sm"><i class="fa fa-eye"></i> View</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p>No posts to show.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Post - The Posting Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="glass-panel">
+                <div class="card-header glass-header">
+                    <h2 class="mb-0">Edit Post</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="id_title" class="form-label">Title</label>
+                            <input type="text" name="title" id="id_title" class="form-control glass-form-control" value="{{ post.title }}" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_content" class="form-label">Content</label>
+                            <textarea name="content" id="id_content" class="form-control glass-form-control" required>{{ post.content }}</textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-3 mt-4">
+                            <button type="submit" class="btn glass-btn-primary py-2">Update Post</button>
+                            <a href="{% url 'dashboard' %}" class="btn glass-btn-outline py-2">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    CKEDITOR.replace('id_content', {
+        height: 300,
+        width: '100%',
+        toolbar: 'Full',
+        allowedContent: true,
+        removePlugins: 'elementspath',
+        contentsCss: 'body { color: white; background: rgba(30, 41, 59, 0.6); }',
+        bodyClass: 'glass-form-control'
+    });
+</script>
+{% endblock %} 

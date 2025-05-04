@@ -10,9 +10,12 @@
   {% load static %}
   <!-- Link the gradient CSS -->
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <!-- CKEditor -->
+  <script src="https://cdn.ckeditor.com/4.16.2/full/ckeditor.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Neuton:ital,wght@0,200;0,300;0,400;0,700;0,800;1,400&display=swap');
   </style>
+  {% block extra_head %}{% endblock %}
 </head>
 
 <body>
@@ -22,7 +25,7 @@
       <a class="navbar-brand" href="/"><img src="{% static 'logo/logo.png' %}" alt="The Posting Hub"class="navbar-logo">The Posting Hub</a>
       <div>
         {% if user.is_authenticated %}
-        <a href="#" class="btn btn-outline-light">
+        <a href="{% url 'user_homepage' %}" class="btn btn-outline-light">
           <span class="material-icons">home</span>
         </a>
         <a href="{% url 'search' %}" class="btn btn-outline-light">

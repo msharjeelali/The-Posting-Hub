@@ -78,6 +78,14 @@
                         <!-- Profile Details -->
                         <h5 class="mt-4 mb-3 pb-2 section-header">Profile Details</h5>
                         <div class="mb-3">
+                            <label class="form-label">Profile Picture</label>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ request.user.profile.profile_picture.url }}" alt="Profile Picture" class="rounded-circle me-3" style="width: 100px; height: 100px; object-fit: cover;">
+                                <input type="file" name="profile_picture" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
                             <label class="form-label">Date of Birth</label>
                             <input type="date" name="date_of_birth" value="{{ request.user.profile.date_of_birth|date:'Y-m-d' }}" class="form-control">
                         </div>

@@ -52,15 +52,50 @@
     color: white;
   }
 
+  .glass-btn-indigo {
+    background: linear-gradient(90deg, #6366F1 60%, #818CF8 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  .glass-btn-indigo:hover {
+    background: linear-gradient(90deg, #818CF8 60%, #6366F1 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
+  }
+
+  .glass-btn-blue {
+    background: linear-gradient(90deg, #3B82F6 60%, #60A5FA 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  .glass-btn-blue:hover {
+    background: linear-gradient(90deg, #60A5FA 60%, #3B82F6 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
+  }
+
   .glass-btn-outline {
-    background: transparent;
-    border: 1px solid rgba(99, 102, 241, 0.5);
-    color: #6366F1;
+    background: rgba(99, 102, 241, 0.15) !important;
+    color: #fff !important;
+    border: 1px solid #6366F1 !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    transition: background 0.2s, color 0.2s;
   }
 
   .glass-btn-outline:hover {
-    background: rgba(99, 102, 241, 0.2);
-    color: #818CF8;
+    background: #6366F1 !important;
+    color: #fff !important;
   }
 
   .text-primary {
@@ -93,23 +128,78 @@
     padding: 0.75rem 1.5rem;
     /* Vertical and horizontal padding */
   }
+
+  /* Post content styling */
+  .post-content {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+  }
+
+  .post-content h1, .post-content h2, .post-content h3 {
+    color: #818CF8;
+    margin-bottom: 1rem;
+  }
+
+  .post-content p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .post-content ul, .post-content ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+  }
+
+  .post-content a {
+    color: #60A5FA;
+    text-decoration: none;
+  }
+
+  .post-content a:hover {
+    text-decoration: underline;
+  }
+
+  .post-content table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+  }
+
+  .post-content table th,
+  .post-content table td {
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .post-content table th {
+    background: rgba(30, 41, 59, 0.6);
+  }
+
+  .post-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+  }
 </style>
 
 <div class="container py-5">
   <div class="row">
     <div class="col-lg-12">
-      <div class="glass-panel mb-5">
-        <!-- Main Header -->
+      <div class="glass-panel mb-4">
+        <!-- Header with greeting and logout -->
         <div class="card-header glass-header d-flex justify-content-between align-items-center py-3">
-          <h2 class="mb-0 section-heading">{{ page_title|default:"Your Feed" }}</h2>
-          <div>
-            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
-          </div>
+          <h2 class="mb-0 section-heading">Hello, <span class="text-primary">{{ user.first_name|default:user.username }}</span></h2>
+          <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
         </div>
-
+        <!-- Action bar for drafts and bookmarks -->
+        <div class="d-flex gap-3 px-4 py-3" style="background: rgba(30,41,59,0.7); border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 0 0 1rem 1rem;">
+          <a href="{% url 'view_drafts_list' %}" class="btn glass-btn-indigo fw-bold"><i class="fa fa-file-alt me-1"></i> View Drafts</a>
+          <a href="{% url 'view_saved_posts' %}" class="btn glass-btn-blue fw-bold"><i class="fa fa-bookmark me-1"></i> View Bookmarked Posts</a>
+        </div>
         <div class="card-body">
-          <h3 class="mb-4">Hello, <span class="text-primary">{{ user.first_name|default:user.email }}</span>!</h3>
-
           <div class="row g-4">
             <!-- Left Column -->
             <div class="col-lg-4">
@@ -120,6 +210,9 @@
                 </div>
                 <div class="card-body">
                   <div class="profile-section">
+                    <div class="text-center mb-3">
+                      <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    </div>
                     <h5 class="text-primary mb-3">Personal Info</h5>
                     <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
                     <p><strong>Email:</strong> {{ user.email }}</p>
@@ -154,9 +247,7 @@
                         <div class="d-flex justify-content-between align-items-start mb-2">
                           <h5 class="text-primary mb-0">{{ post.title }}</h5>
                           <div class="btn-group">
-                            <!-- <button class="btn glass-btn-outline btn-sm">Edit</button> -->
                             <a href="{% url 'edit_post' post.id %}" class="btn glass-btn-outline btn-sm"><i class="fas fa-edit"></i></a>
-                            <!-- <button class="btn glass-btn-outline btn-sm">Delete</button> -->
                             <form method="post" action="{% url 'delete_post' post.id %}" class="d-inline">
                               {% csrf_token %}
                               <button type="submit" class="btn glass-btn-outline btn-sm"
@@ -166,7 +257,9 @@
                             </form>
                           </div>
                         </div>
-                        <p class="mb-2">{{ post.content }}</p>
+                        <div class="post-content">
+                          {{ post.content|safe }}
+                        </div>
                         <p class="text-muted small mb-0">Posted on {{ post.created_at|date:"M d, Y" }}</p>
                       </div>
                     </div>

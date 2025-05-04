@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Add Comment - The Posting Hub{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="glass-panel p-4">
+                <h3 class="mb-3">Add a Comment to: <span class="text-primary">{{ post.title }}</span></h3>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn glass-btn-primary">Post Comment</button>
+                        <a href="{% url 'user_homepage' %}" class="btn glass-btn-outline">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

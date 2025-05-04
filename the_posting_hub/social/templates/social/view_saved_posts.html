@@ -1,0 +1,88 @@
+<style>
+.glass-btn-outline {
+    background: rgba(99, 102, 241, 0.15) !important;
+    color: #fff !important;
+    border: 1px solid #6366F1 !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    transition: background 0.2s, color 0.2s;
+}
+.glass-btn-outline:hover {
+    background: #6366F1 !important;
+    color: #fff !important;
+}
+.glass-btn-primary {
+    background: linear-gradient(90deg, #6366F1 60%, #818CF8 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.glass-btn-primary:hover {
+    background: linear-gradient(90deg, #818CF8 60%, #6366F1 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
+}
+.glass-btn-indigo {
+    background: linear-gradient(90deg, #6366F1 60%, #818CF8 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.glass-btn-indigo:hover {
+    background: linear-gradient(90deg, #818CF8 60%, #6366F1 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
+}
+.glass-btn-blue {
+    background: linear-gradient(90deg, #3B82F6 60%, #60A5FA 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.glass-btn-blue:hover {
+    background: linear-gradient(90deg, #60A5FA 60%, #3B82F6 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
+}
+</style>
+
+{% extends 'base.html' %}
+{% block title %}Bookmarked Posts - The Posting Hub{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Your Bookmarked Posts</h2>
+    <div class="row g-4">
+        {% for post in posts %}
+        <div class="col-lg-6">
+            <div class="glass-card p-4 mb-4">
+                <h4 class="text-primary">{{ post.title }}</h4>
+                <p class="mb-1"><strong>By:</strong> {{ post.author.get_full_name|default:post.author.username }}</p>
+                <p class="mb-2 small" style="color: #818CF8;"><i class="fa fa-calendar-alt me-1"></i>{{ post.created_at|date:"M d, Y H:i" }}</p>
+                <div class="mb-2">{{ post.content|truncatechars:120|safe }}</div>
+                <form method="post" action="{% url 'bookmark_post' post.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn glass-btn-outline btn-sm"><i class="fa fa-bookmark"></i> Unbookmark</button>
+                </form>
+                <a href="{% url 'view_post' post.id %}" class="btn glass-btn-primary btn-sm mt-2"><i class="fa fa-eye"></i> View</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p>No bookmarked posts to show.</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="mt-4">
+        <a href="{% url 'dashboard' %}" class="btn glass-btn-indigo btn-sm"><i class="fa fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %} 
