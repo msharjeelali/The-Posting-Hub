@@ -1,13 +1,13 @@
 from django.contrib.auth import logout
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash, get_user_model
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .models import Post
 from .forms import PostForm, SearchForm, UserProfileForm, UserEditForm, CustomPasswordChangeForm
-# Create your views here.
-# social/views.py
+from django.db.models import Q
+
 
 @login_required
 def dashboard(request):
@@ -61,37 +61,65 @@ def edit_post(request, post_id):
     })
 
 
+# @login_required
+# def search(request):
+#     form = SearchForm(request.GET)
+#     results = {'users': [], 'posts': []}
+    
+#     if form.is_valid():
+#         query = form.cleaned_data['query']
+        
+#         # Search for users
+#         users = User.objects.filter(
+#             username__icontains=query
+#         ) | User.objects.filter(
+#             first_name__icontains=query
+#         ) | User.objects.filter(
+#             last_name__icontains=query
+#         )
+#         results['users'] = users
+        
+#         # Search for posts
+#         posts = Post.objects.filter(
+#             title__icontains=query
+#         ) | Post.objects.filter(
+#             content__icontains=query
+#         )
+#         results['posts'] = posts
+    
+#     context = {
+#         'form': form,
+#         'results': results,
+#         'query': request.GET.get('query', ''),
+#         'page_title': 'Search Results'
+#     }
+#     return render(request, 'social/search.html', context)
+
 @login_required
 def search(request):
-    form = SearchForm(request.GET)
+    query = request.GET.get('query', '')
     results = {'users': [], 'posts': []}
     
-    if form.is_valid():
-        query = form.cleaned_data['query']
+    if query:
+        # Search for users (by username, first name, last name, or email)
+        User = get_user_model()
+        results['users'] = User.objects.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(email__icontains=query)
+        ).distinct()
         
-        # Search for users
-        users = User.objects.filter(
-            username__icontains=query
-        ) | User.objects.filter(
-            first_name__icontains=query
-        ) | User.objects.filter(
-            last_name__icontains=query
-        )
-        results['users'] = users
-        
-        # Search for posts
-        posts = Post.objects.filter(
-            title__icontains=query
-        ) | Post.objects.filter(
-            content__icontains=query
-        )
-        results['posts'] = posts
+        # Search for posts (by title or content)
+        results['posts'] = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query)
+        ).select_related('author').distinct()
     
     context = {
-        'form': form,
         'results': results,
-        'query': request.GET.get('query', ''),
-        'page_title': 'Search Results'
+        'query': query,
+        'page_title': f'Search: {query}' if query else 'Search'
     }
     return render(request, 'social/search.html', context)
 
