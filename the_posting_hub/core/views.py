@@ -7,7 +7,7 @@ from .models import UserProfile
 
 def home(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('user_homepage')
     return render(request, 'core/home.html')
 
 def about(request):
@@ -40,7 +40,7 @@ def custom_login(request):
                 # Display the full name if available, otherwise use email
                 display_name = f"{user.first_name} {user.last_name}".strip() or user.email
                 messages.success(request, f"Welcome back, {display_name}!")
-                return redirect('dashboard')
+                return redirect('user_homepage')
             else:
                 messages.error(request, "Invalid password.")
         else:
@@ -53,7 +53,7 @@ def custom_login(request):
 
 def signup(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('user_homepage')
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -68,7 +68,7 @@ def signup(request):
             # Display the full name if available, otherwise use email
             display_name = f"{user.first_name} {user.last_name}".strip() or user.email
             messages.success(request, f"Welcome to The Posting Hub, {display_name}!")
-            return redirect('dashboard')
+            return redirect('user_homepage')
         else:
             for error in form.errors.values():
                 messages.error(request, error)

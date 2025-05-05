@@ -1,0 +1,125 @@
+<style>
+.glass-btn-outline {
+    background: rgba(99, 102, 241, 0.15) !important;
+    color: #fff !important;
+    border: 1px solid #6366F1 !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    transition: background 0.2s, color 0.2s;
+}
+.glass-btn-outline:hover {
+    background: #6366F1 !important;
+    color: #fff !important;
+}
+.glass-btn-primary {
+    background: linear-gradient(90deg, #6366F1 60%, #818CF8 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.glass-btn-primary:hover {
+    background: linear-gradient(90deg, #818CF8 60%, #6366F1 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
+}
+.glass-card {
+    border-radius: 1rem;
+    box-shadow: 0 2px 16px 0 rgba(30,41,59,0.18);
+    border: 1px solid rgba(99,102,241,0.08);
+    background: rgba(30,41,59,0.6);
+    transition: box-shadow 0.2s, border 0.2s;
+}
+.glass-card:hover {
+    box-shadow: 0 6px 32px 0 rgba(99,102,241,0.18);
+    border: 1.5px solid #6366F1;
+}
+.count-badge {
+    background: rgba(99,102,241,0.15);
+    color: #60A5FA;
+    border-radius: 1rem;
+    padding: 0.2em 0.8em;
+    font-size: 0.95em;
+    font-weight: 500;
+    margin-right: 0.5em;
+    display: inline-block;
+}
+.like-icon {
+    color: #6366F1;
+    font-size: 1.2rem;
+    vertical-align: middle;
+    transition: color 0.2s;
+}
+.like-icon.liked {
+    color: #60A5FA;
+}
+.like-icon:hover {
+    color: #818CF8;
+}
+.liked-by-badge {
+    background: rgba(99,102,241,0.18);
+    color: #fff;
+    border-radius: 1rem;
+    padding: 0.2em 0.8em;
+    font-size: 0.95em;
+    font-weight: 500;
+    margin-right: 0.5em;
+    display: inline-block;
+}
+.comment-card {
+    background: rgba(30,41,59,0.8) !important;
+    color: #fff !important;
+    border: 1px solid rgba(99,102,241,0.12) !important;
+    border-radius: 0.75rem !important;
+    margin-bottom: 0.5em;
+    padding: 0.75em 1em;
+}
+</style>
+
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} - The Posting Hub{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="glass-panel p-4">
+                <h2 class="text-primary mb-2">{{ post.title }}</h2>
+                <p class="mb-1"><strong>By:</strong> {{ post.author.get_full_name|default:post.author.username }}</p>
+                <p class="mb-2 small" style="color: #818CF8;"><i class="fa fa-calendar-alt me-1"></i>{{ post.created_at|date:"M d, Y H:i" }}</p>
+                <div class="mb-4">{{ post.content|safe }}</div>
+                <div class="mb-3 d-flex align-items-center gap-3">
+                    <span class="count-badge"><i class="fa fa-heart like-icon{% if likes.count %} liked{% endif %}"></i> {{ likes.count }} Likes</span>
+                    <span class="count-badge"><i class="fa fa-comment"></i> {{ comments.count }} Comments</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Liked by:</strong>
+                    {% for like in likes %}
+                        <span class="liked-by-badge">{{ like.user.get_full_name|default:like.user.username }}</span>
+                    {% empty %}
+                        <span class="text-muted">No likes yet.</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    <strong>Comments:</strong>
+                    <ul class="list-group mt-2">
+                        {% for comment in comments %}
+                        <li class="comment-card">
+                            <span class="fw-bold text-info"><i class="fa fa-user me-1"></i>{{ comment.user.get_full_name|default:comment.user.username }}:</span>
+                            {{ comment.text }}
+                            <span class="text-muted small">({{ comment.created_at|date:"M d, Y H:i" }})</span>
+                        </li>
+                        {% empty %}
+                        <li class="comment-card">No comments yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="mt-4">
+                    <a href="{% url 'user_homepage' %}" class="btn glass-btn-outline"><i class="fa fa-arrow-left"></i> Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

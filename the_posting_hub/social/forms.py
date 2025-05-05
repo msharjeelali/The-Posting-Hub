@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post
+from .models import Post, Comment
 from core.models import UserProfile
 # -----------------------------------------------------
 from django.contrib.auth.forms import PasswordChangeForm
@@ -65,7 +65,7 @@ class SearchForm(forms.Form):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['date_of_birth', 'bio']
+        fields = ['date_of_birth', 'bio', 'profile_picture']
         widgets = {
             'date_of_birth': forms.DateInput(attrs={
                 'class': 'form-control',
@@ -77,12 +77,24 @@ class UserProfileForm(forms.ModelForm):
                 'rows': 4,
                 'placeholder': 'Tell us about yourself...',
                 'id': 'bio-textarea'
+            }),
+            'profile_picture': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
             })
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+        # Add Bootstrap form-control class to all fields automatically
         for field in self.fields:
             if 'class' not in self.fields[field].widget.attrs:
                 self.fields[field].widget.attrs['class'] = 'form-control'
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']
+        widgets = {
+            'text': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Write your comment here...'})
+        }

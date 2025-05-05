@@ -1,0 +1,221 @@
+<style>
+    .glass-btn-outline {
+        background: rgba(99, 102, 241, 0.15) !important;
+        color: #fff !important;
+        border: 1px solid #6366F1 !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.5px !important;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .glass-btn-outline:hover {
+        background: #6366F1 !important;
+        color: #fff !important;
+    }
+
+    /* Modern card styles */
+    .post-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(30, 41, 59, 0.7);
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.25);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    /* Clickable content area */
+    .post-content-link {
+        display: block;
+        padding: 1.5rem;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .post-content-link:hover {
+        text-decoration: none;
+    }
+
+    /* Icon styles */
+    .action-icon {
+        font-size: 1.1rem;
+        vertical-align: middle;
+    }
+
+    .like-icon {
+        color: #6366F1;
+        transition: color 0.2s;
+    }
+
+    .like-icon.liked {
+        color: #EF4444;
+    }
+
+    .bookmark-icon {
+        color: #6366F1;
+        transition: color 0.2s;
+        font-size: 1.3rem;
+    }
+
+    .bookmark-icon.bookmarked {
+        color: #F59E0B;
+    }
+
+    .comment-icon {
+        color: #6366F1;
+    }
+
+    /* Count badges - for both likes and comments */
+    .count-badge {
+        background: rgba(99, 102, 241, 0.15);
+        color: #E0E7FF;
+        border-radius: 12px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-right: 0.75rem;
+    }
+
+    /* Post header */
+    .post-header {
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .post-title {
+        color: #E0E7FF;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .post-author {
+        color: #818CF8;
+        font-size: 0.95rem;
+    }
+
+    .post-date {
+        color: #94A3B8;
+        font-size: 0.85rem;
+    }
+
+    /* Bookmark position - bottom right */
+    .bookmark-container {
+        position: absolute;
+        bottom: 1rem;
+        right: 1.5rem;
+        z-index: 3;
+    }
+
+    .interaction-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        align-items: center;
+        /* Ensures vertical alignment */
+    }
+
+    .count-badge {
+        background: rgba(99, 102, 241, 0.15);
+        color: #E0E7FF;
+        border-radius: 12px;
+        padding: 0.35rem 0.85rem;
+        /* Slightly increased padding for better balance */
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        height: 32px;
+        /* Fixed height for perfect alignment */
+    }
+
+    .like-button {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        display: inline-flex;
+        /* Ensures proper alignment of inner content */
+    }
+</style>
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - The Posting Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4 text-white">All Posts</h2>
+
+    <div class="posts-container">
+        {% for item in post_data %}
+        <div class="post-card">
+            <!-- Bookmark icon in bottom right corner -->
+            <div class="bookmark-container">
+                <form method="post" action="{% url 'bookmark_post' item.post.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="like-button">
+                        <i class="fas fa-bookmark bookmark-icon{% if item.user_bookmarked %} bookmarked{% endif %}"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Clickable content area -->
+            <a href="{% url 'view_post' item.post.id %}" class="post-content-link">
+                <div class="post-header">
+                    <div>
+                        <h3 class="post-title">{{ item.post.title }}</h3>
+                        <p class="post-author">
+                            <i class="fas fa-user-circle me-1"></i>
+                            {{ item.post.author.get_full_name|default:item.post.author.username }}
+                        </p>
+                    </div>
+                    <span class="post-date">
+                        <i class="far fa-clock me-1"></i>
+                        {{ item.post.created_at|date:"M d, Y H:i" }}
+                    </span>
+                </div>
+
+                <!-- Like and Comment buttons grouped together -->
+                <div class="interaction-buttons">
+                    <form method="post" action="{% url 'like_post' item.post.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="like-button">
+                            <span class="count-badge">
+                                <i class="fas fa-heart like-icon{% if item.user_liked %} liked{% endif %}"></i>
+                                {{ item.likes_count }}
+                            </span>
+                        </button>
+                    </form>
+                
+                    <a href="{% url 'add_comment' item.post.id %}" class="text-decoration-none">
+                        <span class="count-badge">
+                            <i class="fas fa-comment comment-icon"></i>
+                            {{ item.comments_count }}
+                        </span>
+                    </a>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="text-center py-5">
+            <p class="text-white-50">No posts to show.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

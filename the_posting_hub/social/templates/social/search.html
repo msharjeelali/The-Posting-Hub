@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}{{ page_title|default:"Search" }} - The Posting Hub{% endblock %}
 
 {% block content %}
@@ -79,15 +78,6 @@
         padding-bottom: 0.5rem;
         margin-bottom: 1rem;
     }
-
-    .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-right: 12px;
-        border: 2px solid rgba(99, 102, 241, 0.5);
-    }
 </style>
 
 <div class="container py-5">
@@ -101,7 +91,7 @@
 
                 <!-- Search Form -->
                 <div class="p-4 border-bottom border-light border-opacity-10">
-                    <form method="get" action="{% url 'search' %}" class="mb-4">
+                    <form method="get" class="mb-4">
                         <div class="input-group">
                             <input type="text" name="query" class="form-control glass-form-control"
                                 placeholder="Search users and posts..." value="{{ query|default:'' }}"
@@ -116,26 +106,23 @@
                 <!-- Results Section -->
                 <div class="p-4">
                     {% if query %}
-                    <h3 class="mb-4">Results for "{{ query }}"</h3>
+                    <h3 class="glass-content mb-4">Results for "{{ query }}"</h3>
 
                     <!-- Users Results -->
                     {% if results.users %}
                     <div class="mb-5">
                         <h4 class="section-title">Users</h4>
-                        <div class="row g-3">
+                        <div class="list-group">
                             {% for user in results.users %}
-                            <div class="col-md-6">
-                                <a href="#" class="text-decoration-none"></a>
-                                <div class="glass-list-item p-3 d-flex align-items-center">
-                                    <img src="{{ user.profile.profile_picture.url|default:'/static/images/default-profile.png' }}"
-                                        class="user-avatar" alt="{{ user.username }}">
+                            <a href="#" class="glass-list-item list-group-item list-group-item-action p-3">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
                                     <div>
-                                        <h5 class="mb-0">{{ user.get_full_name|default:user.username }}</h5>
+                                        <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
                                         <small class="text-muted">@{{ user.username }}</small>
                                     </div>
+                                    <i class="bi bi-arrow-right-short text-primary"></i>
                                 </div>
-                                </a>
-                            </div>
+                            </a>
                             {% endfor %}
                         </div>
                     </div>
@@ -145,37 +132,33 @@
                     {% if results.posts %}
                     <div class="mb-4">
                         <h4 class="section-title">Posts</h4>
-                        <div class="row g-3">
+                        <div class="list-group">
                             {% for post in results.posts %}
-                            <div class="col-12">
-                                <div class="glass-list-item p-3">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h5>{{ post.title }}</h5>
-                                        <small class="text-muted">{{ post.created_at|date:"M d, Y" }}</small>
-                                    </div>
-                                    <p class="mb-2">{{ post.content|truncatewords:30 }}</p>
-                                    <div class="d-flex align-items-center">
-                                        <img src="{{ post.author.profile.profile_picture.url|default:'/static/images/default-profile.png' }}"
-                                            class="user-avatar" width="30" height="30" alt="{{ post.author.username }}">
-                                        <small class="text-muted">
-                                            By {{ post.author.get_full_name|default:post.author.username }}
-                                        </small>
-                                    </div>
+                            <div class="glass-list-item list-group-item p-3 mb-2">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-2">{{ post.title }}</h5>
+                                    <small class="text-muted">{{ post.created_at|date:"F j, Y" }}</small>
                                 </div>
+                                <p class="mb-2">{{ post.content|truncatewords:30 }}</p>
+                                <small class="text-muted">
+                                    By {{ post.author.get_full_name|default:post.author.username }}
+                                </small>
                             </div>
                             {% endfor %}
                         </div>
                     </div>
                     {% endif %}
 
+                    <!-- No Results -->
                     {% if not results.users and not results.posts %}
-                    <div class="glass-alert p-4 text-center">
-                        <i class="bi bi-search-heart display-4 text-muted mb-3"></i>
+                    <div class="glass-alert p-3 text-center">
+                        <i class="bi bi-search-heart display-6 text-muted mb-3"></i>
                         <h4>No results found</h4>
-                        <p>Try different search terms</p>
+                        <p class="mb-0">We couldn't find any matches for "{{ query }}"</p>
                     </div>
                     {% endif %}
                     {% else %}
+                    <!-- Empty Search State -->
                     <div class="glass-alert p-4 text-center">
                         <i class="bi bi-search display-4 text-muted mb-3"></i>
                         <h4>Start Searching</h4>

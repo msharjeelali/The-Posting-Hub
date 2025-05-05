@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'core',
     'social',
     'django.contrib.contenttypes',
+    'ckeditor',
 ]
 
 STATICFILES_DIRS = [
@@ -78,7 +79,7 @@ TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/app/'
+LOGIN_REDIRECT_URL = '/home/'
 
 
 WSGI_APPLICATION = 'the_posting_hub.wsgi.application'
@@ -131,7 +132,24 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Media files (User uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CKEditor Settings
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Full',
+        'height': 300,
+        'width': '100%',
+        'removePlugins': 'elementspath',
+        'allowedContent': True,
+        'contentsCss': 'body { color: white; background: rgba(30, 41, 59, 0.6); }',
+        'bodyClass': 'glass-form-control'
+    }
+}

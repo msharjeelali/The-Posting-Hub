@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Edit Draft - The Posting Hub{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.ckeditor.com/4.16.2/full/ckeditor.js"></script>
+{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="glass-panel p-4">
+                <h2 class="mb-3">Edit Draft: <span class="text-primary">{{ draft.title }}</span></h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                    <br>
+                    {{ form.content.label_tag }}
+                    <textarea name="content" id="id_content" class="form-control" rows="8">{{ form.content.value|default_if_none:'' }}</textarea>
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn glass-btn-primary" name="publish">Publish</button>
+                        <button type="submit" class="btn glass-btn-outline" name="save_draft">Update Draft</button>
+                        <a href="{% url 'view_drafts_list' %}" class="btn glass-btn-outline">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    CKEDITOR.replace('id_content', {
+        height: 300,
+        width: '100%',
+        toolbar: 'Full',
+        allowedContent: true,
+        removePlugins: 'elementspath',
+        contentsCss: 'body { color: white; background: rgba(30, 41, 59, 0.6); }',
+        bodyClass: 'glass-form-control'
+    });
+</script>
+{% endblock %} 

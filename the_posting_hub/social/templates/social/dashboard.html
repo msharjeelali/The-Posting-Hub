@@ -1,20 +1,42 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ page_title|default:"Your Feed" }} - The Posting Hub{% endblock %}
+{% block title %}{{ user.username }} - The Posting Hub{% endblock %}
 
 {% block content %}
 <style>
+  :root {
+
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    --glass-blur: blur(12px);
+    --primary-text: #E2E8F0;
+    --secondary-text: #94A3B8;
+    --primary-accent: #818CF8;
+    --danger-accent: #ED5E68;
+    --like-color: #ED4956;
+    --success-accent: #34D399;
+  }
+
+  body {
+    background: linear-gradient(135deg,
+        #030712 65%,
+        #d8d8d8 50%,
+        #6366f1 70%,
+        #000000 100%);
+        backdrop-filter: blur(12px);
+    min-height: 100vh;
+  }
+
+  /* Glassmorphism Base Styles */
   .glass-panel {
     background: rgba(15, 23, 42, 0.7);
-    /* Stone-900 with transparency */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-radius: 1rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
     color: #E2E8F0;
-    /* Stone-200 */
   }
 
   .glass-header {
@@ -22,171 +44,530 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     color: #F8FAFC !important;
     padding-right: 0.75rem;
-    /* Stone-50 */
   }
 
-  .glass-card {
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 0.75rem;
-    transition: all 0.3s ease;
+  .glass-btn-primary {
+    background: rgba(79, 70, 229, 0.8) !important;
+    border: none !important;
+    padding: 0.75rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
   }
 
-  .glass-card:hover {
-    background: rgba(30, 41, 59, 0.7);
-    transform: translateY(-2px);
+  .glass-btn-primary:hover {
+    background: rgba(99, 102, 241, 0.9) !important;
+    transform: translateY(-1px);
   }
 
+  .glass-btn-outline {
+        background: rgba(99, 102, 241, 0.15) !important;
+        color: #fff !important;
+        border: 1px solid #6366F1 !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.5px !important;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .glass-btn-outline:hover {
+        background: #6366F1 !important;
+        color: #fff !important;
+    }
+
+    /* Modern card styles */
+    .post-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(30, 41, 59, 0.7);
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.25);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+  /* Buttons */
   .glass-btn {
     background: rgba(79, 70, 229, 0.7);
-    /* Indigo-600 */
     color: white;
     border: none;
     transition: all 0.2s ease;
+    backdrop-filter: var(--glass-blur);
   }
 
   .glass-btn:hover {
     background: rgba(99, 102, 241, 0.9);
-    /* Indigo-500 */
     transform: translateY(-1px);
     color: white;
   }
 
+  .glass-btn-indigo {
+    background: linear-gradient(90deg, #6366F1 60%, #818CF8 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+  }
+
   .glass-btn-outline {
-    background: transparent;
-    border: 1px solid rgba(99, 102, 241, 0.5);
-    color: #6366F1;
+    background: rgba(99, 102, 241, 0.15) !important;
+    color: #fff !important;
+    border: 1px solid var(--primary-accent) !important;
   }
 
   .glass-btn-outline:hover {
-    background: rgba(99, 102, 241, 0.2);
-    color: #818CF8;
+    background: var(--primary-accent) !important;
   }
 
+  /* Text */
   .text-primary {
-    color: #818CF8 !important;
-    /* Indigo-400 */
+    color: var(--primary-accent) !important;
   }
 
   .text-muted {
-    color: #94A3B8 !important;
-    /* Stone-400 */
+    color: var(--secondary-text) !important;
   }
 
-  .card-body {
-    padding: 1.5rem;
+  /* Profile Section */
+  .profile-container {
+    max-width: 935px;
+    margin: 30px auto;
+    padding: 0 20px;
   }
 
-  .profile-section {
+  .profile-header {
+    display: flex;
+    margin-bottom: 2rem;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 2rem;
+    border: 2px solid var(--glass-border);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .profile-info {
+    flex: 1;
+  }
+
+  .profile-username {
+    font-size: 1.75rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+  }
+
+  .profile-stats {
+    display: flex;
+    gap: 2rem;
+    margin: 1.5rem 0;
+  }
+
+  .profile-stat {
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .profile-stat:hover {
+    color: var(--primary-accent);
+  }
+
+  .profile-stat strong {
+    font-weight: 600;
+    display: block;
+    font-size: 1.1rem;
+  }
+
+  .profile-stat span {
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+  }
+
+  .profile-bio .profile-name {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Posts Section */
+  .post-card {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid var(--glass-border);
+    border-radius: 0.75rem;
     margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
   }
 
-  .profile-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
+  .post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   }
 
-  .section-heading {
+  .post-header {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .post-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 1rem;
+    border: 1px solid var(--glass-border);
+  }
+
+  .post-user {
+    flex: 1;
+  }
+
+  .post-username {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .post-date {
+    font-size: 0.8rem;
+    color: var(--secondary-text);
+  }
+
+  .post-content-wrapper {
+    padding: 1.5rem;
+    cursor: pointer;
+  }
+
+  .post-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--primary-accent);
+  }
+
+  .post-body {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .post-body-truncated {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .post-actions {
+    display: flex;
+    align-items: center;
     padding: 0.75rem 1.5rem;
-    /* Vertical and horizontal padding */
+    border-top: 1px solid var(--glass-border);
+  }
+
+  .post-action {
+    margin-right: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+  }
+
+  .post-action:hover {
+    color: var(--primary-accent);
+  }
+
+  .post-action.like-btn.liked {
+    color: var(--like-color);
+  }
+
+  .post-action-count {
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Modal */
+  .modal-content {
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+  }
+
+  .modal-header {
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .modal-footer {
+    border-top: 1px solid var(--glass-border);
+  }
+
+  /* Utilities */
+  .create-post-btn {
+    background: linear-gradient(90deg, #6366F1 0%, #818CF8 100%);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .create-post-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .profile-header {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .profile-avatar {
+      margin-right: 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-stats {
+      justify-content: center;
+    }
   }
 </style>
 
-<div class="container py-5">
-  <div class="row">
-    <div class="col-lg-12">
-      <div class="glass-panel mb-5">
-        <!-- Main Header -->
-        <div class="card-header glass-header d-flex justify-content-between align-items-center py-3">
-          <h2 class="mb-0 section-heading">{{ page_title|default:"Your Feed" }}</h2>
-          <div>
-            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
-          </div>
-        </div>
-
-        <div class="card-body">
-          <h3 class="mb-4">Hello, <span class="text-primary">{{ user.first_name|default:user.email }}</span>!</h3>
-
-          <div class="row g-4">
-            <!-- Left Column -->
-            <div class="col-lg-4">
-              <!-- Profile Card -->
-              <div class="glass-card h-100">
-                <div class="card-header glass-header">
-                  <h4 class="mb-0 section-heading">Your Profile</h4>
-                </div>
-                <div class="card-body">
-                  <div class="profile-section">
-                    <h5 class="text-primary mb-3">Personal Info</h5>
-                    <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                    <p><strong>Email:</strong> {{ user.email }}</p>
-                    {% if user.profile.date_of_birth %}
-                    <p><strong>Date of Birth:</strong> {{ user.profile.date_of_birth }}</p>
-                    {% endif %}
-                    {% if user.profile.bio %}
-                    <div class="profile-section">
-                      <p><strong>Bio:</strong> {{ user.profile.bio }}</p>
-                    </div>
-                    {% endif %}
-                    <a href="{% url 'edit_profile' %}" class="btn glass-btn w-50 mt-3">Edit Profile</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Right Column -->
-            <div class="col-lg-8">
-              <!-- Posts Card -->
-              <div class="glass-card h-100">
-                <div class="card-header glass-header d-flex justify-content-between align-items-center">
-                  <h4 class="mb-0 section-heading">Your Posts</h4>
-                </div>
-
-                <div class="card-body">
-                  {% if posts %}
-                  <div class="row g-3">
-                    {% for post in posts %}
-                    <div class="col-12">
-                      <div class="glass-card p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                          <h5 class="text-primary mb-0">{{ post.title }}</h5>
-                          <div class="btn-group">
-                            <!-- <button class="btn glass-btn-outline btn-sm">Edit</button> -->
-                            <a href="{% url 'edit_post' post.id %}" class="btn glass-btn-outline btn-sm"><i class="fas fa-edit"></i></a>
-                            <!-- <button class="btn glass-btn-outline btn-sm">Delete</button> -->
-                            <form method="post" action="{% url 'delete_post' post.id %}" class="d-inline">
-                              {% csrf_token %}
-                              <button type="submit" class="btn glass-btn-outline btn-sm"
-                                onclick="return confirm('Are you sure you want to delete this post?')">
-                                <span class="material-icons">delete</span>
-                              </button>
-                            </form>
-                          </div>
-                        </div>
-                        <p class="mb-2">{{ post.content }}</p>
-                        <p class="text-muted small mb-0">Posted on {{ post.created_at|date:"M d, Y" }}</p>
-                      </div>
-                    </div>
-                    {% endfor %}
-                  </div>
-                  {% else %}
-                  <div class="text-center py-5">
-                    <i class="bi bi-file-earmark-text display-4 text-muted mb-3"></i>
-                    <h4 class="text-primary">No Posts Yet</h4>
-                    <p class="text-muted">Start sharing your thoughts with the community</p>
-                    <a href="{% url 'create_post' %}" class="btn glass-btn mt-2">Create Your First Post</a>
-                  </div>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content glass-panel">
+      <div class="modal-header glass-header">
+        <h5 class="modal-title" id="deleteAccountModalLabel">Delete Account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+      <form method="post" action="{% url 'delete_account' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <p>This will permanently delete your account and all associated data. This action cannot be undone.</p>
+          <div class="mb-3">
+            <label for="password" class="form-label">Enter your password to confirm:</label>
+            <input type="password" class="form-control glass-card" id="password" name="password" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn glass-btn-outline" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger glass-btn">Delete Account</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
+
+<div class="profile-container">
+  <!-- Profile Header -->
+  <div class="glass-panel mb-4">
+    <div class="profile-header p-4">
+      <img src="{{ user.profile.profile_picture.url }}" class="profile-avatar" alt="Profile picture">
+
+      <div class="profile-info">
+        <div class="d-flex align-items-center mb-3">
+          <h1 class="profile-username">{{ user.username }}</h1>
+          <div class="ms-4">
+            <a href="{% url 'edit_profile' %}" class="btn glass-btn-outline me-2">Edit Profile</a>
+            <div class="dropdown d-inline-block">
+              <button class="btn glass-btn-outline" type="button" id="profileMenu" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <i class="fas fa-cog"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end glass-panel" aria-labelledby="profileMenu">
+                <li><a class="dropdown-item" href="{% url 'view_saved_posts' %}"><i
+                      class="fas fa-bookmark me-2"></i>Saved Posts</a></li>
+                <li><a class="dropdown-item" href="{% url 'view_drafts_list' %}"><i
+                      class="fas fa-file-alt me-2"></i>Drafts</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                    <i class="fas fa-trash-alt me-2"></i>Delete Account
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <strong>{{ posts.count }}</strong>
+            <span>Posts</span>
+          </div>
+          <div class="profile-stat">
+            <strong>{{ user.followers.count }}</strong>
+            <span>Followers</span>
+          </div>
+          <div class="profile-stat">
+            <strong>{{ user.following.count }}</strong>
+            <span>Following</span>
+          </div>
+        </div>
+
+        <div class="profile-bio">
+          <div class="profile-name">{{ user.first_name }} {{ user.last_name }}</div>
+          <p>{{ user.profile.bio|default:"No bio yet" }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Post Button -->
+    <div class="d-flex justify-content-end p-4 pt-0">
+      <a href="{% url 'create_post' %}" class="create-post-btn">
+        <i class="fas fa-plus me-1"></i> Create Post
+      </a>
+    </div>
+  </div>
+
+  <!-- Posts Section -->
+  <div class="glass-panel p-4">
+    <h4 class="section-heading mb-4">Your Posts</h4>
+
+    {% if posts %}
+    {% for post in posts %}
+    <div class="post-card glass-card">
+      <div class="post-header">
+        <img src="{{ user.profile.profile_picture.url }}" class="post-avatar" alt="Profile picture">
+        <div class="post-user">
+          <div class="post-username">{{ user.username }}</div>
+          <div class="post-date">{{ post.created_at|date:"M d, Y" }}</div>
+        </div>
+      </div>
+
+      <a href="{% url 'view_post' post.id %}" class="text-decoration-none">
+        <div class="post-content-wrapper">
+          <h5 class="post-title">{{ post.title }}</h5>
+          <div class="post-body post-body-truncated">
+            {{ post.content|striptags|truncatewords:30 }}
+          </div>
+        </div>
+      </a>
+
+      <div class="post-actions">
+        <form class="like-form" action="{% url 'like_post' post.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="post-action like-btn {% if request.user in post.likes.all %}liked{% endif %}"
+            data-post-id="{{ post.id }}">
+            <i class="fas fa-heart"></i>
+            <span class="post-action-count">{{ post.likes.count }}</span>
+          </button>
+        </form>
+
+        <a href="{% url 'view_post' post.id %}#comments" class="post-action">
+          <i class="fas fa-comment"></i>
+          <span class="post-action-count">{{ post.comments.count }}</span>
+        </a>
+
+        <div class="ms-auto">
+          <a href="{% url 'edit_post' post.id %}" class="btn glass-btn-outline btn-sm me-2">
+            <i class="fas fa-edit"></i>
+          </a>
+          <form method="post" action="{% url 'delete_post' post.id %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn glass-btn-outline btn-sm"
+              onclick="return confirm('Are you sure you want to delete this post?')">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-newspaper display-4 text-muted mb-3"></i>
+      <h4 class="text-muted">No Posts Yet</h4>
+      <p class="text-muted mb-3">When you create posts, they'll appear here</p>
+      <a href="{% url 'create_post' %}" class="create-post-btn">
+        <i class="fas fa-plus me-1"></i> Create Your First Post
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  // Like post functionality with AJAX
+  document.querySelectorAll('.like-form').forEach(form => {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const button = this.querySelector('button');
+      const postId = button.dataset.postId;
+      const likeCount = button.querySelector('.post-action-count');
+      const icon = button.querySelector('i');
+
+      // Show loading state
+      button.disabled = true;
+
+      fetch(this.action, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value,
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Update like count and button state
+            likeCount.textContent = data.likes_count;
+            button.classList.toggle('liked');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        })
+        .finally(() => {
+          button.disabled = false;
+        });
+    });
+  });
+
+  // Make entire post card clickable
+  document.querySelectorAll('.post-card').forEach(card => {
+    const link = card.querySelector('a[href^="/post/"]');
+    if (link) {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', function (e) {
+        // Don't trigger if clicking on buttons or forms inside the card
+        if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' ||
+          e.target.closest('button') || e.target.closest('form') ||
+          e.target.closest('a') || e.target.closest('.dropdown')) {
+          return;
+        }
+        window.location.href = link.href;
+      });
+    }
+  });
+</script>
+
+{% if messages %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    {% for message in messages %}
+    {% if message.tags == 'error' %}
+    toastr.error("{{ message|escapejs }}");
+    {% else %}
+    toastr.success("{{ message|escapejs }}");
+    {% endif %}
+    {% endfor %}
+  });
+</script>
+{% endif %}
+
 {% endblock %}

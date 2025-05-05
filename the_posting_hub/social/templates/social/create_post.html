@@ -1,10 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}{{ page_title|default:"Create Post" }} - The Posting Hub{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.ckeditor.com/4.16.2/full/ckeditor.js"></script>
+{% endblock %}
 
 {% block content %}
 <style>
-    .glass-container {
+    .glass-panel {
         background: rgba(15, 23, 42, 0.7);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
@@ -13,28 +18,14 @@
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
         color: #E2E8F0;
     }
-    
+
     .glass-header {
         background: rgba(30, 41, 59, 0.6) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
         color: #F8FAFC !important;
-        padding: 1.25rem !important;
+        padding-right: 0.75rem;
     }
-    
-    .glass-form-control {
-        background: rgba(30, 41, 59, 0.5) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        color: white !important;
-        padding: 0.75rem 1rem !important;
-    }
-    
-    .glass-form-control:focus {
-        background: rgba(30, 41, 59, 0.7) !important;
-        border-color: rgba(99, 102, 241, 0.5) !important;
-        box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25) !important;
-        color: white !important;
-    }
-    
+
     .glass-btn-primary {
         background: rgba(79, 70, 229, 0.8) !important;
         border: none !important;
@@ -47,113 +38,176 @@
         background: rgba(99, 102, 241, 0.9) !important;
         transform: translateY(-1px);
     }
-    
+
     .glass-btn-outline {
+        background: transparent;
+        border: 1px solid rgba(99, 102, 241, 0.5);
+        color: #6366F1;
+    }
+
+    .glass-btn-outline:hover {
+        background: rgba(99, 102, 241, 0.2);
+        color: #818CF8;
+    }
+
+    .glass-btn-draft {
+        background: linear-gradient(90deg, #6366F1 60%, #60A5FA 100%) !important;
+        color: #fff !important;
+        border: none !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.5px !important;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .glass-btn-draft:hover {
+        background: linear-gradient(90deg, #818CF8 60%, #3B82F6 100%) !important;
+        color: #fff !important;
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
+    }
+
+    /* CKEditor Modern Glassmorphism */
+    .cke_chrome {
+        background: rgba(255, 255, 255, 0.7) !important;
+        border: 1px solid rgba(120,120,120,0.15) !important;
+        border-radius: 1rem !important;
+        box-shadow: 0 4px 30px rgba(0,0,0,0.10);
+    }
+    .cke_top, .cke_bottom {
+        background: rgba(245, 245, 255, 0.85) !important;
+        border: none !important;
+        border-radius: 1rem 1rem 0 0 !important;
+        color: #222 !important;
+    }
+    .cke_contents {
+        background: rgba(30, 41, 59, 0.92) !important;
+        border-radius: 0 0 1rem 1rem !important;
+    }
+    .cke_wysiwyg_frame, .cke_wysiwyg_div, .cke_editable {
         background: transparent !important;
-        border: 1px solid rgba(99, 102, 241, 0.5) !important;
+        color: #F8FAFC !important;
+        font-family: 'Neuton', 'Segoe UI', Arial, sans-serif !important;
+        font-size: 1.1rem !important;
+    }
+    .cke_button {
+        background: transparent !important;
+        border-radius: 0.5rem !important;
+        transition: background 0.2s;
+    }
+    .cke_button:hover, .cke_button:focus {
+        background: rgba(99, 102, 241, 0.12) !important;
+    }
+    .cke_button_icon {
+        filter: none !important;
+        opacity: 0.85 !important;
+    }
+    .cke_panel, .cke_panel_block {
+        background: rgba(255,255,255,0.98) !important;
+        color: #222 !important;
+        border-radius: 0.5rem !important;
+    }
+    .cke_panel_listItem a {
+        color: #222 !important;
+    }
+    .cke_panel_listItem a:hover {
+        background: rgba(99, 102, 241, 0.08) !important;
         color: #6366F1 !important;
     }
-    
-    .glass-btn-outline:hover {
-        background: rgba(99, 102, 241, 0.15) !important;
+    .cke_combo_text, .cke_combo_open {
+        background: rgba(245, 245, 255, 0.85) !important;
+        color: #222 !important;
+        border-radius: 0.3rem !important;
+    }
+    .cke_label {
+        color: #222 !important;
+    }
+    .cke_toolgroup {
+        border: none !important;
+    }
+    .cke_resizer {
+        display: none !important;
+    }
+
+    /* Editor content styling */
+    .cke_editable h1, .cke_editable h2, .cke_editable h3 {
         color: #818CF8 !important;
     }
-    
-    .form-text {
-        color: rgba(255, 255, 255, 0.6) !important;
+
+    .cke_editable a {
+        color: #60A5FA !important;
     }
-    
-    .text-danger {
-        color: #FCA5A5 !important;
+
+    .cke_panel_listItem a {
+        color: black !important;
+    }
+
+    /* Style the toolbar buttons */
+    .cke_button {
+        background: transparent !important;
+    }
+
+    .cke_button:hover {
+        background: rgba(99, 102, 241, 0.2) !important;
+    }
+
+    .cke_button_icon {
+        filter: brightness(2);
+    }
+
+    /* Style dropdown panels */
+    .cke_panel {
+        background: rgba(30, 41, 59, 0.95) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .cke_panel_block {
+        background: transparent !important;
     }
 </style>
 
 <div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <div class="glass-container overflow-hidden">
-        <!-- Header -->
-        <div class="glass-header text-center">
-          <h2 class="mb-0">{{ page_title|default:"Create Post" }}</h2>
-        </div>
-        
-        <!-- Form Body -->
-        <div class="p-4">
-          <!-- Messages -->
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert glass-container mb-4 border-{% if message.tags == 'error' %}danger{% else %}success{% endif %}">
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
-          
-          <!-- Form -->
-          <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            
-            {% for field in form %}
-            <div class="mb-4">
-              <label for="{{ field.id_for_label }}" class="form-label mb-2">{{ field.label }}</label>
-              
-              {% if field.name == 'content' %}
-                <textarea 
-                  name="{{ field.name }}"
-                  id="{{ field.id_for_label }}"
-                  class="form-control glass-form-control"
-                  rows="6"
-                  placeholder="Write your post content here..."
-                >{{ field.value|default:'' }}</textarea>
-              {% else %}
-                <input 
-                  type="{{ field.field.widget.input_type }}"
-                  name="{{ field.name }}"
-                  id="{{ field.id_for_label }}"
-                  class="form-control glass-form-control"
-                  value="{{ field.value|default:'' }}"
-                  placeholder="Enter {{ field.label|lower }}"
-                >
-              {% endif %}
-              
-              {% if field.errors %}
-                <div class="mt-2">
-                  {% for error in field.errors %}
-                    <small class="text-danger">{{ error }}</small>
-                  {% endfor %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="glass-panel">
+                <div class="card-header glass-header">
+                    <h2 class="mb-0">{{ page_title|default:"Create Post" }}</h2>
                 </div>
-              {% endif %}
-              
-              {% if field.help_text %}
-                <div class="form-text mt-2">{{ field.help_text }}</div>
-              {% endif %}
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="id_title" class="form-label">Title</label>
+                            <input type="text" name="title" id="id_title" class="form-control glass-form-control" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_content" class="form-label">Content</label>
+                            <textarea name="content" id="id_content" class="form-control glass-form-control" required></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-3 mt-4">
+                            <button type="submit" class="btn glass-btn-primary py-2" name="post">
+                                {% if is_edit %}Update Post{% else %}Create Post{% endif %}
+                            </button>
+                            <button type="submit" class="btn glass-btn-draft py-2" name="save_draft">Save as Draft</button>
+                            <a href="{% url 'dashboard' %}" class="btn glass-btn-outline py-2">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            {% endfor %}
-            
-            <!-- Form Buttons -->
-            <div class="d-grid gap-3 mt-4">
-              <button type="submit" class="btn glass-btn-primary py-2">
-                {% if is_edit %}Update Post{% else %}Create Post{% endif %}
-              </button>
-              <a href="{% url 'dashboard' %}" class="btn glass-btn-outline py-2">Cancel</a>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
 <script>
-    // Add transition effects
-    document.querySelectorAll('.glass-btn-primary, .glass-btn-outline').forEach(btn => {
-        btn.style.transition = 'all 0.3s ease';
-    });
-    
-    // Add focus effects
-    document.querySelectorAll('.glass-form-control').forEach(input => {
-        input.addEventListener('focus', function() {
-            this.style.transition = 'all 0.3s ease';
-        });
+    CKEDITOR.replace('id_content', {
+        height: 300,
+        width: '100%',
+        toolbar: 'Full',
+        allowedContent: true,
+        removePlugins: 'elementspath',
+        contentsCss: 'body { color: white; background: rgba(30, 41, 59, 0.6); }',
+        bodyClass: 'glass-form-control'
     });
 </script>
 {% endblock %}
