@@ -25,5 +25,6 @@ urlpatterns = [
     path('toggle-follow/<int:user_id>/', views.toggle_follow, name='toggle_follow'),
     path('report_post/<int:post_id>/', views.report_post, name='report_post'),
     path('comment/<int:comment_id>/report/', views.report_comment, name='report_comment'),
-
+    path('notifications/', views.view_notifications, name='notifications'),
+    path('notifications/clear/', views.clear_all_notifications, name='clear_all_notifications'),
 ]

@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Notifications - The Posting Hub{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        --glass-blur: blur(12px);
+        --primary-text: #E2E8F0;
+        --secondary-text: #94A3B8;
+        --primary-accent: #818CF8;
+        --danger-accent: #ED5E68;
+        --like-color: #ED4956;
+        --success-accent: #34D399;
+    }
+
+    body {
+        background: linear-gradient(135deg,
+                #030712 65%,
+                #d8d8d8 50%,
+                #6366f1 70%,
+                #000000 100%);
+        backdrop-filter: blur(12px);
+        min-height: 100vh;
+    }
+
+    /* Glassmorphism Base Styles */
+    .glass-panel {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        color: #E2E8F0;
+    }
+
+    .notification-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 20px;
+    }
+
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .notification-title {
+        font-size: 2rem;
+        font-weight: 300;
+        color: var(--primary-text);
+        margin: 0;
+    }
+
+    .btn-clear-all {
+        background: rgba(237, 94, 104, 0.2);
+        color: var(--danger-accent);
+        border: 1px solid var(--danger-accent);
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .btn-clear-all:hover {
+        background: rgba(237, 94, 104, 0.3);
+    }
+
+    .notification-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .notification-item {
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid var(--glass-border);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .notification-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .notification-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .notification-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1.5rem;
+        border: 2px solid var(--glass-border);
+    }
+
+    .notification-text {
+        flex: 1;
+    }
+
+    .notification-user-link {
+        color: var(--primary-accent);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .notification-user-link:hover {
+        color: #6366F1;
+        text-decoration: underline;
+    }
+
+    .notification-message {
+        margin: 0.25rem 0;
+    }
+
+    .notification-time {
+        font-size: 0.85rem;
+        color: var(--secondary-text);
+    }
+
+    .notification-empty {
+        text-align: center;
+        padding: 3rem;
+        color: var(--secondary-text);
+    }
+
+    .notification-empty i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--secondary-text);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .notification-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .notification-avatar {
+            margin-right: 0;
+            margin-bottom: 1rem;
+        }
+
+        .notification-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+</style>
+
+<div class="notification-container">
+    <div class="notification-header">
+        <h2 class="notification-title">Notifications</h2>
+        {% if notifications %}
+        <form method="post" action="{% url 'clear_all_notifications' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-clear-all">
+                <i class="fas fa-trash-alt me-1"></i> Clear All
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <ul class="notification-list">
+        {% for notification in notifications %}
+        <li class="notification-item glass-panel">
+            <div class="notification-content">
+                <img src="{{ notification.from_user.profile.profile_picture.url }}" class="notification-avatar"
+                    alt="{{ notification.from_user.get_full_name }}">
+                <div class="notification-text">
+                    <div class="notification-message">
+                        {% if notification.notification_type == 'comment' %}
+                        <a href="{% url 'view_profile' notification.from_user.id %}"
+                            class="notification-user-link">
+                            {{ notification.from_user.get_full_name }}
+                        </a> commented on your post.
+                        {% elif notification.notification_type == 'like' %}
+                        <a href="{% url 'view_profile' notification.from_user.id %}"
+                            class="notification-user-link">
+                            {{ notification.from_user.get_full_name }}
+                        </a> liked your post.
+                        {% elif notification.notification_type == 'follow' %}
+                        <a href="{% url 'view_profile' notification.from_user.id %}"
+                            class="notification-user-link">
+                            {{ notification.from_user.get_full_name }}
+                        </a> started following you.
+                        {% endif %}
+                    </div>
+                    <div class="notification-time">{{ notification.timestamp|naturaltime }}</div>
+                </div>
+            </div>
+        </li>
+        {% empty %}
+        <li class="notification-item glass-panel notification-empty">
+            <i class="fas fa-bell-slash"></i>
+            <h4>No notifications yet</h4>
+            <p>When you receive notifications, they'll appear here</p>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

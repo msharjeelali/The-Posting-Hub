@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'django.contrib.humanize',
     'django.contrib.auth',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -62,7 +63,7 @@ ROOT_URLCONF = 'the_posting_hub.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,7 +85,16 @@ LOGIN_REDIRECT_URL = '/home/'
 
 DEFAULT_FROM_EMAIL = 'm.anasrahim21@gmail.com'
 ADMIN_EMAIL = 'm.anasrahim21@gmail.com'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # for development
+# For development (emails print in console)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# For production (example using Gmail SMTP)
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'your-app-password'  # Use App Password if 2FA is enabled
 
 
 WSGI_APPLICATION = 'the_posting_hub.wsgi.application'

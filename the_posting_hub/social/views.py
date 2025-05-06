@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
-from .models import Post, Like, Comment, Draft, Bookmark, Follow, ReportUser, ReportPost, ReportComment
+from .models import Post, Like, Comment, Draft, Bookmark, Follow, ReportUser, ReportPost, ReportComment, Notification
 from .forms import PostForm, SearchForm, UserProfileForm, UserEditForm, CustomPasswordChangeForm, CommentForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -213,6 +213,13 @@ def like_post(request, post_id):
         like.is_active = False  # Unlike
     else:
         like.is_active = True   # Like
+        if post.author != request.user:
+            Notification.objects.create(
+                to_user=post.author,
+                from_user=request.user,
+                notification_type='like',
+                post=post
+            )
     like.save()
     return HttpResponseRedirect(reverse('user_homepage'))
 
@@ -226,6 +233,17 @@ def add_comment(request, post_id):
             comment.post = post
             comment.user = request.user
             comment.save()
+
+            # Create notification for post author (if not commenting on own post)
+            if post.author != request.user:
+                Notification.objects.create(
+                    to_user=post.author,
+                    from_user=request.user,
+                    notification_type='comment',
+                    post=post,
+                    comment=comment
+                )
+
             messages.success(request, 'Your comment has been added!')
             return redirect('user_homepage')
     else:
@@ -332,6 +350,11 @@ def toggle_follow(request, user_id):
         Follow.objects.create(follower=current_user, following=target_user)
         if reverse_follow:
             reverse_follow.delete()  # Remove reverse follow to ensure one-direction
+        Notification.objects.create(
+            to_user=target_user,
+            from_user=current_user,
+            notification_type='follow',
+        )
         messages.success(request, f"You followed {target_user.username}.")
 
     # Redirect back to the target user's profile after both follow and unfollow actions
@@ -447,3 +470,22 @@ def report_comment(request, comment_id):
         messages.error(request, f"Failed to submit report: {str(e)}")
     
     return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+@login_required
+def view_notifications(request):
+    notifications = Notification.objects.filter(to_user=request.user).order_by('-timestamp')
+    return render(request, 'social/notification.html', {'notifications': notifications})
+
+@login_required
+def clear_all_notifications(request):
+    if request.method == 'POST':
+        # Delete all notifications for the current user (or mark them as read)
+        deleted_count, _ = Notification.objects.filter(to_user=request.user).delete()
+        # If you want to mark them as read instead, use the following line:
+        # Notification.objects.filter(to_user=request.user).update(is_read=True)
+        
+        messages.success(request, f"Cleared {deleted_count} notifications.")
+    else:
+        messages.error(request, "Invalid request method")
+    
+    return redirect('notifications')  # Assuming you have a notifications URL name

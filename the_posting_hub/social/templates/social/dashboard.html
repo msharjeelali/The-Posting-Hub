@@ -339,6 +339,42 @@
       justify-content: center;
     }
   }
+
+  * Like button styles */
+    .post-action.like-btn {
+        background: transparent;
+        border: none;
+        color: var(--secondary-text);
+        padding: 0.5rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+
+    .post-action.like-btn:hover {
+        color: var(--like-color);
+    }
+
+    .post-action.like-btn.liked {
+        color: var(--like-color);
+    }
+
+    .post-action-count {
+        margin-left: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Delete button specific styles */
+    .delete-btn {
+        background: rgba(237, 94, 104, 0.15) !important;
+        border-color: var(--danger-accent) !important;
+        color: var(--danger-accent) !important;
+    }
+
+    .delete-btn:hover {
+        background: var(--danger-accent) !important;
+        color: white !important;
+    }
 </style>
 
 <!-- Delete Account Modal -->
@@ -385,9 +421,9 @@
                 <i class="fas fa-cog"></i>
               </button>
               <ul class="dropdown-menu dropdown-menu-end glass-panel" aria-labelledby="profileMenu">
-                <li><a class="dropdown-item" href="{% url 'view_saved_posts' %}"><i
+                <li><a class="dropdown-item text-white" href="{% url 'view_saved_posts' %}"><i
                       class="fas fa-bookmark me-2"></i>Saved Posts</a></li>
-                <li><a class="dropdown-item" href="{% url 'view_drafts_list' %}"><i
+                <li><a class="dropdown-item text-white" href="{% url 'view_drafts_list' %}"><i
                       class="fas fa-file-alt me-2"></i>Drafts</a></li>
                 <li>
                   <hr class="dropdown-divider">
@@ -426,13 +462,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Create Post Button -->
-    <div class="d-flex justify-content-end p-4 pt-0">
-      <a href="{% url 'create_post' %}" class="create-post-btn">
-        <i class="fas fa-plus me-1"></i> Create Post
-      </a>
-    </div>
   </div>
 
   <!-- Posts Section -->
@@ -445,7 +474,7 @@
       <div class="post-header">
         <img src="{{ user.profile.profile_picture.url }}" class="post-avatar" alt="Profile picture">
         <div class="post-user">
-          <div class="post-username">{{ user.username }}</div>
+          <div class="post-username">{{ user.get_full_name }}</div>
           <div class="post-date">{{ post.created_at|date:"M d, Y" }}</div>
         </div>
       </div>
@@ -460,29 +489,31 @@
       </a>
 
       <div class="post-actions">
-        <form class="like-form" action="{% url 'like_post' post.id %}" method="post">
+        <!-- Like Button -->
+        <form method="post" action="{% url 'like_post' post.id %}" class="d-inline">
           {% csrf_token %}
-          <button type="submit" class="post-action like-btn {% if request.user in post.likes.all %}liked{% endif %}"
-            data-post-id="{{ post.id }}">
+          <button type="submit" class="post-action like-btn {% if request.user in post.likes.all %}liked{% endif %}">
             <i class="fas fa-heart"></i>
             <span class="post-action-count">{{ post.likes.count }}</span>
           </button>
         </form>
 
+        <!-- Comment Button -->
         <a href="{% url 'view_post' post.id %}#comments" class="post-action">
           <i class="fas fa-comment"></i>
           <span class="post-action-count">{{ post.comments.count }}</span>
         </a>
 
+        <!-- Edit/Delete Buttons -->
         <div class="ms-auto">
           <a href="{% url 'edit_post' post.id %}" class="btn glass-btn-outline btn-sm me-2">
-            <i class="fas fa-edit"></i>
+            <i class="fas fa-edit"></i> Edit
           </a>
           <form method="post" action="{% url 'delete_post' post.id %}" class="d-inline">
             {% csrf_token %}
-            <button type="submit" class="btn glass-btn-outline btn-sm"
+            <button type="submit" class="btn glass-btn-outline btn-sm delete-btn"
               onclick="return confirm('Are you sure you want to delete this post?')">
-              <i class="fas fa-trash-alt"></i>
+              <i class="fas fa-trash-alt"></i> Delete
             </button>
           </form>
         </div>
