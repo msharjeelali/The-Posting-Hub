@@ -20,4 +20,10 @@ urlpatterns = [
     path('bookmark_post/<int:post_id>/', views.bookmark_post, name='bookmark_post'),
     path('saved_posts/', views.view_saved_posts, name='view_saved_posts'),
     path('delete_account/', views.delete_account, name='delete_account'),
+    path('user/<int:user_id>/', views.view_profile, name='view_profile'),
+    path('report/<int:user_id>/', views.report_user, name='report_user'),
+    path('toggle-follow/<int:user_id>/', views.toggle_follow, name='toggle_follow'),
+    path('report_post/<int:post_id>/', views.report_post, name='report_post'),
+    path('comment/<int:comment_id>/report/', views.report_comment, name='report_comment'),
+
 ]

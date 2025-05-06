@@ -1,0 +1,590 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ profile_user.first_name }} {{ profile_user.last_name }} - The Posting Hub{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        --glass-blur: blur(12px);
+        --primary-text: #E2E8F0;
+        --secondary-text: #94A3B8;
+        --primary-accent: #818CF8;
+        --danger-accent: #ED5E68;
+        --like-color: #ED4956;
+        --success-accent: #34D399;
+    }
+
+    body {
+        background: linear-gradient(135deg,
+                #030712 65%,
+                #d8d8d8 50%,
+                #6366f1 70%,
+                #000000 100%);
+        backdrop-filter: blur(12px);
+        min-height: 100vh;
+    }
+
+    /* Glassmorphism Base Styles */
+    .glass-panel {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        color: #E2E8F0;
+    }
+
+    .glass-header {
+        background: rgba(30, 41, 59, 0.6) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #F8FAFC !important;
+        padding-right: 0.75rem;
+    }
+
+    .glass-btn-primary {
+        background: rgba(79, 70, 229, 0.8) !important;
+        border: none !important;
+        padding: 0.75rem !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    .glass-btn-primary:hover {
+        background: rgba(99, 102, 241, 0.9) !important;
+        transform: translateY(-1px);
+    }
+
+    .glass-btn-outline {
+        background: rgba(99, 102, 241, 0.15) !important;
+        color: #fff !important;
+        border: 1px solid #6366F1 !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.5px !important;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .glass-btn-outline:hover {
+        background: #6366F1 !important;
+        color: #fff !important;
+    }
+
+    /* Modern card styles */
+    .post-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(30, 41, 59, 0.7);
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.25);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    /* Buttons */
+    .glass-btn {
+        background: rgba(79, 70, 229, 0.7);
+        color: white;
+        border: none;
+        transition: all 0.2s ease;
+        backdrop-filter: var(--glass-blur);
+    }
+
+    .glass-btn:hover {
+        background: rgba(99, 102, 241, 0.9);
+        transform: translateY(-1px);
+        color: white;
+    }
+
+    .glass-btn-indigo {
+        background: linear-gradient(90deg, #6366F1 60%, #818CF8 100%) !important;
+        color: #fff !important;
+        border: none !important;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+    }
+
+    .glass-btn-outline {
+        background: rgba(99, 102, 241, 0.15) !important;
+        color: #fff !important;
+        border: 1px solid var(--primary-accent) !important;
+    }
+
+    .glass-btn-outline:hover {
+        background: var(--primary-accent) !important;
+    }
+
+    /* Text */
+    .text-primary {
+        color: var(--primary-accent) !important;
+    }
+
+    .text-muted {
+        color: var(--secondary-text) !important;
+    }
+
+    /* Profile Section */
+    .profile-container {
+        max-width: 935px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    .profile-header {
+        display: flex;
+        margin-bottom: 2rem;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 2rem;
+        border: 2px solid var(--glass-border);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-info {
+        flex: 1;
+    }
+
+    .profile-username {
+        font-size: 1.75rem;
+        font-weight: 300;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-stats {
+        display: flex;
+        gap: 2rem;
+        margin: 1.5rem 0;
+    }
+
+    .profile-stat {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .profile-stat:hover {
+        color: var(--primary-accent);
+    }
+
+    .profile-stat strong {
+        font-weight: 600;
+        display: block;
+        font-size: 1.1rem;
+    }
+
+    .profile-stat span {
+        font-size: 0.9rem;
+        color: var(--secondary-text);
+    }
+
+    .profile-bio .profile-name {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Posts Section */
+    .post-card {
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid var(--glass-border);
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .post-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .post-header {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .post-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1rem;
+        border: 1px solid var(--glass-border);
+    }
+
+    .post-user {
+        flex: 1;
+    }
+
+    .post-username {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .post-date {
+        font-size: 0.8rem;
+        color: var(--secondary-text);
+    }
+
+    .post-content-wrapper {
+        padding: 1.5rem;
+        cursor: pointer;
+    }
+
+    .post-title {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--primary-accent);
+    }
+
+    .post-body {
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .post-body-truncated {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .post-actions {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        border-top: 1px solid var(--glass-border);
+    }
+
+    .post-action {
+        margin-right: 1.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+    }
+
+    .post-action:hover {
+        color: var(--primary-accent);
+    }
+
+    .post-action.like-btn.liked {
+        color: var(--like-color);
+    }
+
+    .post-action-count {
+        margin-left: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    /* Modal */
+    .modal-content {
+        background: rgba(30, 41, 59, 0.95);
+        border: 1px solid var(--glass-border);
+        backdrop-filter: var(--glass-blur);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .modal-footer {
+        border-top: 1px solid var(--glass-border);
+    }
+
+    /* Report User Modal */
+    .report-reason {
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid var(--glass-border);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .report-reason:hover {
+        background: rgba(30, 41, 59, 0.7);
+        border-color: var(--danger-accent);
+    }
+
+    .report-reason input[type="radio"] {
+        display: none;
+    }
+
+    .report-reason input[type="radio"]:checked+label {
+        color: var(--danger-accent);
+    }
+
+    /* Utilities */
+    .create-post-btn {
+        background: linear-gradient(90deg, #6366F1 0%, #818CF8 100%);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1.25rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .create-post-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            margin-right: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-stats {
+            justify-content: center;
+        }
+    }
+</style>
+
+<!-- Report User Modal -->
+<div class="modal fade" id="reportUserModal" tabindex="-1" aria-labelledby="reportUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content glass-panel">
+            <div class="modal-header glass-header">
+                <h5 class="modal-title" id="reportUserModalLabel">Report User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'report_user' profile_user.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>Please select the reason for reporting this user:</p>
+
+                    <div class="report-reason">
+                        <input type="radio" id="reason1" name="reason" value="spam" required>
+                        <label for="reason1" class="ms-2">Spam or fake account</label>
+                    </div>
+
+                    <div class="report-reason">
+                        <input type="radio" id="reason2" name="reason" value="harassment">
+                        <label for="reason2" class="ms-2">Harassment or bullying</label>
+                    </div>
+
+                    <div class="report-reason">
+                        <input type="radio" id="reason3" name="reason" value="inappropriate">
+                        <label for="reason3" class="ms-2">Inappropriate content</label>
+                    </div>
+
+                    <div class="report-reason">
+                        <input type="radio" id="reason4" name="reason" value="hate_speech">
+                        <label for="reason4" class="ms-2">Hate speech or symbols</label>
+                    </div>
+
+                    <div class="mb-3 mt-3">
+                        <label for="additionalInfo" class="form-label">Additional information (optional):</label>
+                        <textarea class="form-control glass-card" id="additionalInfo" name="additional_info"
+                            rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn glass-btn-outline" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger glass-btn">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="profile-container">
+    <!-- Profile Header -->
+    <div class="glass-panel mb-4">
+        <div class="profile-header p-4">
+            <img src="{{ profile_user.profile.profile_picture.url }}" class="profile-avatar" alt="Profile picture">
+
+            <div class="profile-info">
+                <div class="d-flex align-items-center mb-3">
+                    <h1 class="profile-username">{{ profile_user.first_name }} {{ profile_user.last_name }}</h1>
+                    <div class="ms-4">
+                        {% if request.user != profile_user %}
+                        <form method="post" action="{% url 'toggle_follow' profile_user.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit"
+                                class="btn {% if is_following %}glass-btn-outline{% else %}glass-btn-indigo{% endif %} me-2">
+                                {% if is_following %}
+                                <i class="fas fa-user-minus me-1"></i> Unfollow
+                                {% else %}
+                                <i class="fas fa-user-plus me-1"></i> Follow
+                                {% endif %}
+                            </button>
+                        </form>
+
+                        <button class="btn glass-btn-outline" type="button" data-bs-toggle="modal"
+                            data-bs-target="#reportUserModal">
+                            <i class="fas fa-flag me-1"></i> Report
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <strong>{{ posts.count }}</strong>
+                        <span>Posts</span>
+                    </div>
+                    <div class="profile-stat">
+                        <strong>{{ profile_user.followers.count }}</strong>
+                        <span>Followers</span>
+                    </div>
+                    <div class="profile-stat">
+                        <strong>{{ profile_user.following.count }}</strong>
+                        <span>Following</span>
+                    </div>
+                </div>
+
+                <div class="profile-bio">
+                    <div class="profile-name">{{ profile_user.first_name }} {{ profile_user.last_name }}</div>
+                    <p>{{ profile_user.profile.bio|default:"No bio yet" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Posts Section -->
+    <div class="glass-panel p-4">
+        <h4 class="section-heading mb-4">{{ profile_user.first_name }}'s Posts</h4>
+
+        {% if posts %}
+        {% for post in posts %}
+        <div class="post-card glass-card">
+            <div class="post-header">
+                <img src="{{ profile_user.profile.profile_picture.url }}" class="post-avatar" alt="Profile picture">
+                <div class="post-user">
+                    <div class="post-username">{{ profile_user.username }}</div>
+                    <div class="post-date">{{ post.created_at|date:"M d, Y" }}</div>
+                </div>
+            </div>
+
+            <a href="{% url 'view_post' post.id %}" class="text-decoration-none">
+                <div class="post-content-wrapper">
+                    <h5 class="post-title">{{ post.title }}</h5>
+                    <div class="post-body post-body-truncated">
+                        {{ post.content|striptags|truncatewords:30 }}
+                    </div>
+                </div>
+            </a>
+
+            <div class="post-actions">
+                <form class="like-form" action="{% url 'like_post' post.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="post-action like-btn {% if request.user in post.likes.all %}liked{% endif %}"
+                        data-post-id="{{ post.id }}">
+                        <i class="fas fa-heart"></i>
+                        <span class="post-action-count">{{ post.likes.count }}</span>
+                    </button>
+                </form>
+
+                <a href="{% url 'view_post' post.id %}#comments" class="post-action">
+                    <i class="fas fa-comment"></i>
+                    <span class="post-action-count">{{ post.comments.count }}</span>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-newspaper display-4 text-muted mb-3"></i>
+            <h4 class="text-muted">No Posts Yet</h4>
+            <p class="text-muted mb-3">{{ profile_user.first_name }} hasn't created any posts yet</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Like post functionality with AJAX
+    document.querySelectorAll('.like-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const button = this.querySelector('button');
+            const postId = button.dataset.postId;
+            const likeCount = button.querySelector('.post-action-count');
+            const icon = button.querySelector('i');
+
+            // Show loading state
+            button.disabled = true;
+
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update like count and button state
+                        likeCount.textContent = data.likes_count;
+                        button.classList.toggle('liked');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                })
+                .finally(() => {
+                    button.disabled = false;
+                });
+        });
+    });
+
+    // Make entire post card clickable
+    document.querySelectorAll('.post-card').forEach(card => {
+        const link = card.querySelector('a[href^="/post/"]');
+        if (link) {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', function (e) {
+                // Don't trigger if clicking on buttons or forms inside the card
+                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' ||
+                    e.target.closest('button') || e.target.closest('form') ||
+                    e.target.closest('a') || e.target.closest('.dropdown')) {
+                    return;
+                }
+                window.location.href = link.href;
+            });
+        }
+    });
+</script>
+
+{% if messages %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        toastr.error("{{ message|escapejs }}");
+        {% else %}
+        toastr.success("{{ message|escapejs }}");
+        {% endif %}
+        {% endfor %}
+    });
+</script>
+{% endif %}
+
+{% endblock %}

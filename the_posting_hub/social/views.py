@@ -4,15 +4,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
-from .models import Post, Like, Comment, Draft, Bookmark
+from .models import Post, Like, Comment, Draft, Bookmark, Follow, ReportUser, ReportPost, ReportComment
 from .forms import PostForm, SearchForm, UserProfileForm, UserEditForm, CustomPasswordChangeForm, CommentForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.views.decorators.http import require_POST
-# Create your views here.
-# social/views.py
+from django.core.mail import send_mail
+from django.conf import settings
+
+
 
 @require_POST
 @login_required
@@ -93,7 +95,6 @@ def edit_post(request, post_id):
         'post': post,  # optional, in case you want title/content in template
         'is_edit': True  # template can change button label etc.
     })
-
 
 @login_required
 def search(request):
@@ -240,6 +241,7 @@ def view_post(request, post_id):
         'post': post,
         'likes': likes,
         'comments': comments,
+        'user': request.user,
     })
 
 @login_required
@@ -290,3 +292,158 @@ def view_saved_posts(request):
     bookmarks = Bookmark.objects.filter(user=request.user, is_active=True).select_related('post').order_by('-date_saved')
     posts = [bookmark.post for bookmark in bookmarks]
     return render(request, 'social/view_saved_posts.html', {'posts': posts})
+
+@login_required
+def view_profile(request, user_id):
+    profile_user = get_object_or_404(User, id=user_id)
+    posts = Post.objects.filter(author=profile_user)
+    
+    is_following = False
+    if request.user.is_authenticated:
+        is_following = Follow.objects.filter(follower=request.user, following=profile_user).exists()
+
+    context = {
+        'profile_user': profile_user,
+        'posts': posts,
+        'is_following': is_following,
+    }
+    return render(request, 'social/view_profile.html', context)
+
+@login_required
+def toggle_follow(request, user_id):
+    target_user = get_object_or_404(User, id=user_id)
+    current_user = request.user
+
+    if target_user == current_user:
+        messages.error(request, "You cannot follow yourself.")
+        return redirect('view_profile', user_id=current_user.id)  # Fix for self-follow case
+
+    existing_follow = Follow.objects.filter(follower=current_user, following=target_user).first()
+    reverse_follow = Follow.objects.filter(follower=target_user, following=current_user).first()
+
+    if existing_follow:
+        # Unfollow and remove mutual follow if exists
+        existing_follow.delete()
+        if reverse_follow:
+            reverse_follow.delete()
+        messages.success(request, f"You unfollowed {target_user.username}.")
+    else:
+        # Follow user and ensure it's not mutual
+        Follow.objects.create(follower=current_user, following=target_user)
+        if reverse_follow:
+            reverse_follow.delete()  # Remove reverse follow to ensure one-direction
+        messages.success(request, f"You followed {target_user.username}.")
+
+    # Redirect back to the target user's profile after both follow and unfollow actions
+    return redirect('view_profile', user_id=target_user.id)  # Use user_id here
+
+@login_required
+def report_user(request, user_id):
+    reported_user = get_object_or_404(User, id=user_id)
+    reporter = request.user
+
+    if reported_user == reporter:
+        messages.error(request, "You cannot report yourself.")
+        return redirect('view_profile', user_id=reporter.id)
+
+    if request.method == "POST":
+        reason = request.POST.get("reason")
+        additional_info = request.POST.get("additional_info")
+
+        ReportUser.objects.create(
+            reporter=reporter,
+            reported_user=reported_user,
+            reason=reason,
+            additional_info=additional_info
+        )
+
+        messages.success(request, "User report submitted successfully.")
+        return redirect('view_profile', user_id=reported_user.id)
+
+    return redirect('view_profile', user_id=reported_user.id)
+
+@login_required
+def report_post(request, post_id):
+    post_to_report = get_object_or_404(Post, id=post_id)
+    reporter = request.user
+
+    if post_to_report.author == reporter:
+        messages.error(request, "You cannot report your own post.")
+        return redirect('view_post', post_id=post_to_report.id)
+
+    if request.method == "POST":
+        reason = request.POST.get('reason', 'Not specified')  # Fallback to default
+        additional_info = request.POST.get('additional_info', '')
+
+        try:
+            report = ReportPost.objects.create(
+                reporter=reporter,
+                post=post_to_report,
+                post_author=post_to_report.author,
+                reason=reason,
+                additional_info=additional_info
+            )
+
+            # Send email notification to admins
+            subject = f"Post Report: {post_to_report.id}"
+            message = f"{reporter.username} has reported Post ID {post_to_report.id} for {reason}."
+            from_email = settings.DEFAULT_FROM_EMAIL
+            admin_email = settings.ADMIN_EMAIL if hasattr(settings, 'ADMIN_EMAIL') else from_email
+
+            send_mail(subject, message, from_email, [admin_email])
+            messages.success(request, "Your report has been submitted to the admin.")
+            
+        except Exception as e:
+            messages.error(request, f"Failed to submit report: {str(e)}")
+
+        return redirect('view_post', post_id=post_to_report.id)
+
+    return redirect('view_post', post_id=post_to_report.id)
+
+@login_required
+@require_POST
+def report_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    
+    if comment.user == request.user:
+        messages.error(request, "You cannot report your own comment.")
+        return redirect(request.META.get('HTTP_REFERER', 'home'))
+    
+    reason = request.POST.get('reason', '').strip()
+    additional_info = request.POST.get('additional_info', '').strip()
+    
+    if not reason:
+        messages.error(request, "Please select a reason for reporting.")
+        return redirect(request.META.get('HTTP_REFERER', 'home'))
+    
+    # Check if user has already reported this comment
+    existing_report = ReportComment.objects.filter(
+        comment=comment,
+        reporter=request.user
+    ).exists()
+    
+    if existing_report:
+        messages.warning(request, "You have already reported this comment.")
+        return redirect(request.META.get('HTTP_REFERER', 'home'))
+    
+    try:
+        report = ReportComment.objects.create(
+            comment=comment,
+            reporter=request.user,
+            reason=reason,
+            additional_info=additional_info if additional_info else None
+        )
+
+        # Send email notification to admins
+        subject = f"Comment Report: {comment.id}"
+        message = f"{request.user.username} has reported Comment ID {comment.id} on Post '{comment.post.title}' for {reason}."
+        from_email = settings.DEFAULT_FROM_EMAIL
+        admin_email = settings.ADMIN_EMAIL if hasattr(settings, 'ADMIN_EMAIL') else from_email
+
+        send_mail(subject, message, from_email, [admin_email])
+        messages.success(request, "Thank you for reporting this comment. Our team will review it.")
+        
+    except Exception as e:
+        messages.error(request, f"Failed to submit report: {str(e)}")
+    
+    return redirect(request.META.get('HTTP_REFERER', 'home'))

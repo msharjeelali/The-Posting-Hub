@@ -1,12 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ user.username }} - The Posting Hub{% endblock %}
+{% block title %}{{ user.first_name }} {{ user.last_name }} - The Posting Hub{% endblock %}
 
 {% block content %}
 <style>
   :root {
-
     --glass-border: rgba(255, 255, 255, 0.1);
     --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
     --glass-blur: blur(12px);
@@ -24,7 +23,7 @@
         #d8d8d8 50%,
         #6366f1 70%,
         #000000 100%);
-        backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
     min-height: 100vh;
   }
 
@@ -60,36 +59,36 @@
   }
 
   .glass-btn-outline {
-        background: rgba(99, 102, 241, 0.15) !important;
-        color: #fff !important;
-        border: 1px solid #6366F1 !important;
-        font-weight: 500 !important;
-        letter-spacing: 0.5px !important;
-        transition: background 0.2s, color 0.2s;
-    }
+    background: rgba(99, 102, 241, 0.15) !important;
+    color: #fff !important;
+    border: 1px solid #6366F1 !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    transition: background 0.2s, color 0.2s;
+  }
 
-    .glass-btn-outline:hover {
-        background: #6366F1 !important;
-        color: #fff !important;
-    }
+  .glass-btn-outline:hover {
+    background: #6366F1 !important;
+    color: #fff !important;
+  }
 
-    /* Modern card styles */
-    .post-card {
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(30, 41, 59, 0.7);
-        transition: transform 0.3s, box-shadow 0.3s;
-        margin-bottom: 1.5rem;
-        overflow: hidden;
-        position: relative;
-    }
+  /* Modern card styles */
+  .post-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(30, 41, 59, 0.7);
+    transition: transform 0.3s, box-shadow 0.3s;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    position: relative;
+  }
 
-    .post-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.25);
-        border: 1px solid rgba(99, 102, 241, 0.3);
-    }
+  .post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.25);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+  }
 
   /* Buttons */
   .glass-btn {
@@ -377,7 +376,7 @@
 
       <div class="profile-info">
         <div class="d-flex align-items-center mb-3">
-          <h1 class="profile-username">{{ user.username }}</h1>
+          <h1 class="profile-username">{{ user.first_name }} {{ user.last_name }}</h1>
           <div class="ms-4">
             <a href="{% url 'edit_profile' %}" class="btn glass-btn-outline me-2">Edit Profile</a>
             <div class="dropdown d-inline-block">
@@ -397,6 +396,9 @@
                   <button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
                     <i class="fas fa-trash-alt me-2"></i>Delete Account
                   </button>
+                </li>
+                <li>
+                  <a href="{% url 'logout' %}" class="dropdown-item text-danger">Logout</a>
                 </li>
               </ul>
             </div>

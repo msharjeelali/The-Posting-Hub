@@ -114,7 +114,8 @@
                         <h4 class="section-title">Users</h4>
                         <div class="list-group">
                             {% for user in results.users %}
-                            <a href="#" class="glass-list-item list-group-item list-group-item-action p-3">
+                            <a href="{% url 'view_profile' user.id %}"
+                                class="glass-list-item list-group-item list-group-item-action p-3">
                                 <div class="d-flex w-100 justify-content-between align-items-center">
                                     <div>
                                         <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
@@ -124,6 +125,7 @@
                                 </div>
                             </a>
                             {% endfor %}
+
                         </div>
                     </div>
                     {% endif %}
@@ -134,7 +136,7 @@
                         <h4 class="section-title">Posts</h4>
                         <div class="list-group">
                             {% for post in results.posts %}
-                            <div class="glass-list-item list-group-item p-3 mb-2">
+                            <a href="{% url 'view_post' post.id %}" class="glass-list-item list-group-item p-3 mb-2">
                                 <div class="d-flex w-100 justify-content-between">
                                     <h5 class="mb-2">{{ post.title }}</h5>
                                     <small class="text-muted">{{ post.created_at|date:"F j, Y" }}</small>
@@ -143,7 +145,7 @@
                                 <small class="text-muted">
                                     By {{ post.author.get_full_name|default:post.author.username }}
                                 </small>
-                            </div>
+                            </a>
                             {% endfor %}
                         </div>
                     </div>

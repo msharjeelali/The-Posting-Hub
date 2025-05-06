@@ -82,6 +82,11 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/home/'
 
 
+DEFAULT_FROM_EMAIL = 'm.anasrahim21@gmail.com'
+ADMIN_EMAIL = 'm.anasrahim21@gmail.com'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # for development
+
+
 WSGI_APPLICATION = 'the_posting_hub.wsgi.application'
 
 
