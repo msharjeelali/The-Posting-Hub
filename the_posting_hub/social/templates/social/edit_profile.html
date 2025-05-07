@@ -45,6 +45,17 @@
         background: rgba(99, 102, 241, 0.9) !important;
         transform: translateY(-1px);
     }
+
+    .glass-btn-outline {
+        background: transparent;
+        border: 1px solid rgba(99, 102, 241, 0.5);
+        color: #6366F1;
+    }
+
+    .glass-btn-outline:hover {
+        background: rgba(99, 102, 241, 0.2);
+        color: #818CF8;
+    }
 </style>
 
 <div class="container mt-5">
@@ -114,6 +125,7 @@
                         
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn glass-btn-primary btn-outline-light">Save Changes</button>
+                            <a href="{% url 'dashboard' %}" class="btn glass-btn-outline">Cancel</a>
                         </div>
                     </form>
                 </div>

@@ -369,7 +369,7 @@
         <div class="modal-content glass-panel">
             <div class="modal-header glass-header">
                 <h5 class="modal-title" id="reportUserModalLabel">Report User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post" action="{% url 'report_user' profile_user.id %}">
                 {% csrf_token %}
@@ -469,40 +469,41 @@
     <div class="glass-panel p-4">
         <h4 class="section-heading mb-4">{{ profile_user.first_name }}'s Posts</h4>
 
-        {% if posts %}
-        {% for post in posts %}
+        {% if post_data %}
+        {% for post in post_data %}
         <div class="post-card glass-card">
             <div class="post-header">
                 <img src="{{ profile_user.profile.profile_picture.url }}" class="post-avatar" alt="Profile picture">
                 <div class="post-user">
-                    <div class="post-username">{{ profile_user.username }}</div>
-                    <div class="post-date">{{ post.created_at|date:"M d, Y" }}</div>
+                    <div class="post-username">{{ profile_user.get_full_name }}</div>
+                    <div class="post-date">{{ post.post.created_at|date:"M d, Y" }}</div>
                 </div>
             </div>
 
-            <a href="{% url 'view_post' post.id %}" class="text-decoration-none">
+            <a href="{% url 'view_post' post.post.id %}" class="text-decoration-none">
                 <div class="post-content-wrapper">
-                    <h5 class="post-title">{{ post.title }}</h5>
+                    <h5 class="post-title">{{ post.post.title }}</h5>
                     <div class="post-body post-body-truncated">
-                        {{ post.content|striptags|truncatewords:30 }}
+                        {{ post.post.content|striptags|truncatewords:30 }}
                     </div>
                 </div>
             </a>
 
             <div class="post-actions">
-                <form class="like-form" action="{% url 'like_post' post.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit"
-                        class="post-action like-btn {% if request.user in post.likes.all %}liked{% endif %}"
-                        data-post-id="{{ post.id }}">
+                <!-- Like Button -->
+                <a href="{% url 'like_post' post.post.id %}" class="text-decoration-none">
+                    <span class="count-badge">
                         <i class="fas fa-heart"></i>
-                        <span class="post-action-count">{{ post.likes.count }}</span>
-                    </button>
-                </form>
-
-                <a href="{% url 'view_post' post.id %}#comments" class="post-action">
-                    <i class="fas fa-comment"></i>
-                    <span class="post-action-count">{{ post.comments.count }}</span>
+                        <span class="post-action-count">{{ post.likes_count }}</span>
+                    </span>
+                </a>
+                <span class="mx-2"> </span>
+                <!-- Comment Button -->
+                <a href="{% url 'add_comment' post.post.id %}" class="text-decoration-none">
+                    <span class="count-badge">
+                        <i class="fas fa-comment comment-icon"></i>
+                        {{ post.comments_count }}
+                    </span>
                 </a>
             </div>
         </div>
@@ -516,75 +517,4 @@
         {% endif %}
     </div>
 </div>
-
-<script>
-    // Like post functionality with AJAX
-    document.querySelectorAll('.like-form').forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const button = this.querySelector('button');
-            const postId = button.dataset.postId;
-            const likeCount = button.querySelector('.post-action-count');
-            const icon = button.querySelector('i');
-
-            // Show loading state
-            button.disabled = true;
-
-            fetch(this.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value,
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                credentials: 'same-origin'
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Update like count and button state
-                        likeCount.textContent = data.likes_count;
-                        button.classList.toggle('liked');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                })
-                .finally(() => {
-                    button.disabled = false;
-                });
-        });
-    });
-
-    // Make entire post card clickable
-    document.querySelectorAll('.post-card').forEach(card => {
-        const link = card.querySelector('a[href^="/post/"]');
-        if (link) {
-            card.style.cursor = 'pointer';
-            card.addEventListener('click', function (e) {
-                // Don't trigger if clicking on buttons or forms inside the card
-                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' ||
-                    e.target.closest('button') || e.target.closest('form') ||
-                    e.target.closest('a') || e.target.closest('.dropdown')) {
-                    return;
-                }
-                window.location.href = link.href;
-            });
-        }
-    });
-</script>
-
-{% if messages %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        {% for message in messages %}
-        {% if message.tags == 'error' %}
-        toastr.error("{{ message|escapejs }}");
-        {% else %}
-        toastr.success("{{ message|escapejs }}");
-        {% endif %}
-        {% endfor %}
-    });
-</script>
-{% endif %}
-
 {% endblock %}

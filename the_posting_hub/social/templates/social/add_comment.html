@@ -1,6 +1,32 @@
 {% extends 'base.html' %}
 {% block title %}Add Comment - The Posting Hub{% endblock %}
 {% block content %}
+<style>
+    .glass-btn-primary {
+        background: rgba(79, 70, 229, 0.8) !important;
+        border: none !important;
+        padding: 0.75rem !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    .glass-btn-primary:hover {
+        background: rgba(99, 102, 241, 0.9) !important;
+        transform: translateY(-1px);
+    }
+
+    .glass-btn-outline {
+        background: transparent;
+        border: 1px solid rgba(99, 102, 241, 0.5);
+        color: #6366F1;
+    }
+
+    .glass-btn-outline:hover {
+        background: rgba(99, 102, 241, 0.2);
+        color: #818CF8;
+    }
+</style>
+
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-6">
@@ -10,7 +36,7 @@
                     {% csrf_token %}
                     {{ form.as_p }}
                     <div class="d-flex gap-2 mt-3">
-                        <button type="submit" class="btn glass-btn-primary">Post Comment</button>
+                        <button type="submit" class="btn glass-btn-primary text-white">Post Comment</button>
                         <a href="{% url 'user_homepage' %}" class="btn glass-btn-outline">Cancel</a>
                     </div>
                 </form>

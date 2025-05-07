@@ -254,7 +254,8 @@
         border-top: 1px solid rgba(99, 102, 241, 0.2);
     }
 
-    .form-control, .form-select {
+    .form-control,
+    .form-select {
         background: rgba(30, 41, 59, 0.8);
         border: 1px solid rgba(99, 102, 241, 0.3);
         color: white;
@@ -262,7 +263,8 @@
         -webkit-backdrop-filter: blur(5px);
     }
 
-    .form-control:focus, .form-select:focus {
+    .form-control:focus,
+    .form-select:focus {
         background: rgba(30, 41, 59, 0.9);
         border-color: var(--primary-color);
         color: white;
@@ -286,7 +288,7 @@
         .glass-container {
             padding: 1.5rem;
         }
-        
+
         .action-buttons {
             flex-direction: column;
             gap: 0.75rem;
@@ -296,8 +298,17 @@
     .modal {
         z-index: 1055 !important;
     }
+
     .modal-backdrop {
         z-index: 1050 !important;
+    }
+
+    a:link {
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
     }
 </style>
 
@@ -311,16 +322,19 @@
                 <!-- Post Header -->
                 <h1 class="post-title">{{ post.title }}</h1>
                 <div class="post-meta">
-                    <span><i class="fas fa-user me-1"></i> {{ post.author.get_full_name|default:post.author.username }}</span>
+                    <a href="{% url 'view_profile' post.author.id %}" class="me-1">
+                        <span><i class="fas fa-user me-1"></i>
+                            {{ post.author.get_full_name|default:post.author.username }}</span>
+                    </a>
                     <span class="mx-2">•</span>
                     <span><i class="fas fa-calendar-alt me-1"></i> {{ post.created_at|date:"M d, Y H:i" }}</span>
                 </div>
-                
+
                 <!-- Post Content -->
                 <div class="post-content mb-4">
                     {{ post.content|safe }}
                 </div>
-                
+
                 <!-- Post Stats -->
                 <div class="d-flex align-items-center flex-wrap gap-2 mb-4">
                     <span class="count-badge">
@@ -331,65 +345,69 @@
                         <i class="fas fa-comment"></i> {{ comments.count }} Comments
                     </span>
                 </div>
-                
+
                 <!-- Liked By Section -->
                 <h3 class="section-title">Liked By</h3>
                 <div class="mb-4">
                     {% if likes.count %}
-                        {% for like in likes %}
-                        <span class="liked-by-badge">
-                            <i class="fas fa-user-circle me-1"></i>
-                            {{ like.user.get_full_name|default:like.user.username }}
-                        </span>
-                        {% endfor %}
+                    {% for like in likes %}
+                    <span class="liked-by-badge">
+                        <i class="fas fa-user-circle me-1"></i>
+                        {{ like.user.get_full_name|default:like.user.username }}
+                    </span>
+                    {% endfor %}
                     {% else %}
-                        <div class="empty-state">
-                            <i class="fas fa-heart-broken fa-2x mb-2"></i>
-                            <p>No likes yet. Be the first to like this post!</p>
-                        </div>
+                    <div class="empty-state">
+                        <i class="fas fa-heart-broken fa-2x mb-2"></i>
+                        <p>No likes yet. Be the first to like this post!</p>
+                    </div>
                     {% endif %}
                 </div>
-                
+
                 <!-- Comments Section -->
                 <h3 class="section-title">Comments</h3>
                 <div class="mb-4">
                     {% if comments.count %}
-                        {% for comment in comments %}
-                        <div class="comment-card">
-                            <div class="comment-user">
-                                <i class="fas fa-user-circle"></i>
-                                {{ comment.user.get_full_name|default:comment.user.username }}
-                            </div>
-                            <div class="comment-text">
-                                {{ comment.text }}
-                            </div>
-                            <div class="comment-meta">
-                                <span>
-                                    <i class="fas fa-clock me-1"></i>
-                                    {{ comment.created_at|date:"M d, Y H:i" }}
-                                </span>
-                                <div class="comment-actions">
-                                    {% if user.is_authenticated and comment.user != user %}
-                                    <button class="comment-action-btn" data-bs-toggle="modal" data-bs-target="#reportCommentModal{{ comment.id }}">
-                                        <i class="fas fa-flag me-1"></i>Report
-                                    </button>
-                                    {% endif %}
-                                </div>
+                    {% for comment in comments %}
+                    <div class="comment-card">
+                        <div class="comment-user">
+                            <a href="{% url 'view_profile' comment.user.id %}" class="me-1">
+                                <span><i class="fas fa-user-circle"></i>
+                                    {{ comment.user.get_full_name|default:comment.user.username }}</span>
+                            </a>
+                        </div>
+                        <div class="comment-text">
+                            {{ comment.text }}
+                        </div>
+                        <div class="comment-meta">
+                            <span>
+                                <i class="fas fa-clock me-1"></i>
+                                {{ comment.created_at|date:"M d, Y H:i" }}
+                            </span>
+                            <div class="comment-actions">
+                                {% if user.is_authenticated and comment.user != user %}
+                                <button class="comment-action-btn" data-bs-toggle="modal"
+                                    data-bs-target="#reportCommentModal{{ comment.id }}">
+                                    <i class="fas fa-flag me-1"></i>Report
+                                </button>
+                                {% endif %}
                             </div>
                         </div>
-                        {% endfor %}
+                    </div>
+                    {% endfor %}
                     {% else %}
-                        <div class="empty-state">
-                            <i class="fas fa-comments fa-2x mb-2"></i>
-                            <p>No comments yet. Start the conversation!</p>
-                        </div>
+                    <div class="empty-state">
+                        <i class="fas fa-comments fa-2x mb-2"></i>
+                        <p>No comments yet. Start the conversation!</p>
+                    </div>
                     {% endif %}
                 </div>
-                
+
                 <!-- Action Buttons -->
                 <div class="action-buttons">
                     {% if user.is_authenticated and post.author != user %}
-                    <button type="button" class="btn glass-btn-outline" data-bs-toggle="modal" data-bs-target="#reportModal">
+                    <button type="button" class="btn glass-btn-outline" data-bs-toggle="modal"
+                        data-bs-target="#reportModal">
                         <i class="fas fa-flag me-1"></i> Report Post
                     </button>
                     {% endif %}
@@ -405,10 +423,11 @@
 <!-- Post Report Modal -->
 <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content glass-panel">
+            <div class="modal-header glass-header">
                 <h5 class="modal-title" id="reportModalLabel">Report Post</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <form action="{% url 'report_post' post.id %}" method="POST">
                 <div class="modal-body">
@@ -444,7 +463,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Report Comment</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <form action="{% url 'report_comment' comment.id %}" method="POST">
                 <div class="modal-body">
@@ -473,27 +493,4 @@
     </div>
 </div>
 {% endfor %}
-{% endblock %}
-
-{% block scripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Initialize tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-        
-        // Add smooth hover effects
-        const glassElements = document.querySelectorAll('.glass-container, .comment-card, .count-badge');
-        glassElements.forEach(el => {
-            el.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-2px)';
-            });
-            el.addEventListener('mouseleave', function() {
-                this.style.transform = '';
-            });
-        });
-    });
-</script>
 {% endblock %}

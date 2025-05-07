@@ -1,40 +1,73 @@
 {% extends 'base.html' %}
-
 {% block title %}Edit Post - The Posting Hub{% endblock %}
-
+{% block extra_head %}
+<script src="https://cdn.ckeditor.com/4.16.2/full/ckeditor.js"></script>
+{% endblock %}
 {% block content %}
+<style>
+    .glass-panel {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        color: #E2E8F0;
+    }
+
+    .glass-header {
+        background: rgba(30, 41, 59, 0.6) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #F8FAFC !important;
+        padding-right: 0.75rem;
+    }
+
+    .glass-btn-primary {
+        background: rgba(79, 70, 229, 0.8) !important;
+        border: none !important;
+        padding: 0.75rem !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    .glass-btn-primary:hover {
+        background: rgba(99, 102, 241, 0.9) !important;
+        transform: translateY(-1px);
+    }
+
+    .glass-btn-outline {
+        background: transparent;
+        border: 1px solid rgba(99, 102, 241, 0.5);
+        color: #6366F1;
+    }
+
+    .glass-btn-outline:hover {
+        background: rgba(99, 102, 241, 0.2);
+        color: #818CF8;
+    }
+</style>
+
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="glass-panel">
-                <div class="card-header glass-header">
-                    <h2 class="mb-0">Edit Post</h2>
-                </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        <div class="mb-4">
-                            <label for="id_title" class="form-label">Title</label>
-                            <input type="text" name="title" id="id_title" class="form-control glass-form-control" value="{{ post.title }}" required>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="id_content" class="form-label">Content</label>
-                            <textarea name="content" id="id_content" class="form-control glass-form-control" required>{{ post.content }}</textarea>
-                        </div>
-                        
-                        <div class="d-grid gap-3 mt-4">
-                            <button type="submit" class="btn glass-btn-primary py-2">Update Post</button>
-                            <a href="{% url 'dashboard' %}" class="btn glass-btn-outline py-2">Cancel</a>
-                        </div>
-                    </form>
-                </div>
+            <div class="glass-panel p-4">
+                <h2 class="mb-3">Edit Post: <span class="text-primary">{{ post.title }}</span></h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                    <br>
+                    {{ form.content.label_tag }}
+                    <textarea name="content" id="id_content" class="form-control" rows="8">{{ form.content.value|default_if_none:'' }}</textarea>
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn glass-btn-primary">Update Post</button>
+                        <a href="{% url 'dashboard' %}" class="btn glass-btn-outline">Cancel</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
 <script>
     CKEDITOR.replace('id_content', {
         height: 300,

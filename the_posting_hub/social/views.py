@@ -37,15 +37,22 @@ def delete_account(request):
 
 @login_required
 def dashboard(request):
-    """
-    This is the main feed/dashboard where users can see blog posts.
-    In the future, this will display posts from the user and others they follow.
-    """
     # Get the user's posts
     user_posts = Post.objects.filter(author=request.user).order_by('-created_at')
-    
+    post_data = []
+    for post in user_posts:
+        likes_count = post.likes.filter(is_active=True).count()
+        comments_count = post.comments.filter(is_active=True).count()
+        user_liked = post.likes.filter(user=request.user, is_active=True).exists()
+        post_data.append({
+            'post': post,
+            'likes_count': likes_count,
+            'comments_count': comments_count,
+            'user_liked': user_liked,
+        })
     context = {
         'posts': user_posts,
+        'post_data': post_data,
         'page_title': 'Your Feed'
     }
     return render(request, 'social/dashboard.html', context)
@@ -84,16 +91,17 @@ def create_post(request):
 def edit_post(request, post_id):
     post = get_object_or_404(Post, id=post_id, author=request.user)
     if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES, instance=post)
+        form = PostForm(request.POST, instance=post)
         if form.is_valid():
             form.save()
             return redirect('home')  # or your post detail view
     else:
-        form = PostForm(instance=post)  # pre-fill the form
-    return render(request, 'social/create_post.html', {
+        form = PostForm(instance=post)  # pre-fill the form with the post data
+
+    return render(request, 'social/edit_post.html', {
         'form': form,
-        'post': post,  # optional, in case you want title/content in template
-        'is_edit': True  # template can change button label etc.
+        'post': post,  # Optional, in case you want title/content in template
+        'is_edit': True
     })
 
 @login_required
@@ -221,7 +229,7 @@ def like_post(request, post_id):
                 post=post
             )
     like.save()
-    return HttpResponseRedirect(reverse('user_homepage'))
+    return redirect(request.META.get('HTTP_REFERER', 'user_homepage'))
 
 @login_required
 def add_comment(request, post_id):
@@ -245,7 +253,7 @@ def add_comment(request, post_id):
                 )
 
             messages.success(request, 'Your comment has been added!')
-            return redirect('user_homepage')
+            return redirect(request.META.get('HTTP_REFERER', 'user_homepage'))
     else:
         form = CommentForm()
     return render(request, 'social/add_comment.html', {'form': form, 'post': post})
@@ -315,6 +323,17 @@ def view_saved_posts(request):
 def view_profile(request, user_id):
     profile_user = get_object_or_404(User, id=user_id)
     posts = Post.objects.filter(author=profile_user)
+    post_data = []
+    for post in posts:
+        likes_count = post.likes.filter(is_active=True).count()
+        comments_count = post.comments.filter(is_active=True).count()
+        user_liked = post.likes.filter(user=request.user, is_active=True).exists()
+        post_data.append({
+            'post': post,
+            'likes_count': likes_count,
+            'comments_count': comments_count,
+            'user_liked': user_liked,
+        })
     
     is_following = False
     if request.user.is_authenticated:
@@ -323,6 +342,7 @@ def view_profile(request, user_id):
     context = {
         'profile_user': profile_user,
         'posts': posts,
+        'post_data': post_data,
         'is_following': is_following,
     }
     return render(request, 'social/view_profile.html', context)
