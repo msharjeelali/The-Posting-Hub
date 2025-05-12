@@ -16,6 +16,11 @@ def about(request):
 def team(request):
     return render(request, 'core/team.html')
 
+def contact(request):
+    print(f"Contact Request: {request}")
+    return render(request, 'core/contact.html')
+
+
 def custom_login(request):
     if request.user.is_authenticated:
         return redirect('dashboard')

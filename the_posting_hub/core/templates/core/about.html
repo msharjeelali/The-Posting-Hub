@@ -1,6 +1,78 @@
 {% extends 'base.html' %}
 {% block title %}About{% endblock %}
 
+{% block extra_head %}
+
+<style>
+  #about-section {
+    text-align: center;
+    background: radial-gradient(circle, #0f141b 50%, rgba(255, 0, 0, 0) 100%);
+    padding: 50px 0;
+    margin-bottom: 50px;
+
+    h2 {
+      font-size: 40px;
+    }
+
+    p {
+      margin: 50px;
+      font-size: 18px;
+      color: #838aa7;
+      word-spacing: 2px;
+    }
+  }
+
+  #team-section {
+    text-align: center;
+    background: radial-gradient(circle, #0f141b 50%, rgba(255, 0, 0, 0) 100%);
+    margin-bottom: 50px;
+
+    h2 {
+      font-size: 40px;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-top: 50px;
+    }
+
+    .team-card {
+      width: 50%;
+      display: flex;
+      margin: 20px 0;
+      padding: 0 50px;
+      word-spacing: 2px;
+    }
+
+    .image-wrapper {
+      border-radius: 10px;
+      width: 50%;
+      height: 200px;
+      margin: 0;
+
+      img {
+        border-radius: 10px;
+      }
+    }
+
+    .member-detail {
+      display: flex;
+      flex-direction: column;
+      margin-left: 50px;
+      max-width: 40%;
+
+      :nth-child(3) {
+        text-align: right;
+        font-style: italic;
+      }
+    }
+  }
+</style>
+
+{% endblock %}
+
 {% block content %}
 <section id="about-section">
   <h2>About The Posting Hub</h2>
@@ -51,7 +123,7 @@
     <!-- Team Member 3 -->
     <div class="team-card text-center">
       <div class="image-wrapper mb-3">
-        <img src="https://via.placeholder.com/300" alt="Team Member" class="img-fluid">
+        <img src="../../../static/team-photos/noor-team-photo.jpg" alt="Team Member" class="img-fluid">
       </div>
       <div class="member-detail">
         <h4 class="text-white">Noor ul Ain</h4>

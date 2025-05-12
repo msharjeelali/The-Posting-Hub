@@ -119,53 +119,6 @@ nav {
   }
 }
 
-#post-section {
-  text-align: center;
-  padding-top: 50px;
-  h2 {
-    font-size: 36px;
-    font-weight: bold;
-  }
-  p {
-    font-size: 18px;
-    color: #838aa7;
-  }
-  .card-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding: 50px 0;
-  }
-  .card {
-    width: 400px;
-    background-color: #1d222b;
-    border-radius: 10px;
-    padding: 25px;
-    font-size: 20px;
-    border: 1px solid #030712;
-    margin-bottom: 50px;
-    height: fit-content;
-    text-align: left;
-    p {
-      word-spacing: 2px;
-      color: #e5e7eb;
-    }
-    div {
-      display: flex;
-      img {
-        width: 50px;
-        aspect-ratio: 1;
-        border-radius: 25px;
-      }
-      p {
-        margin-left: 20px;
-        vertical-align: middle;
-        color: #e5e7eb;
-      }
-    }
-  }
-}
-
 #about-section {
   text-align: center;
   background: radial-gradient(circle, #0f141b 50%, rgba(255, 0, 0, 0) 100%);
@@ -206,6 +159,7 @@ nav {
       color: white;
       text-align: right;
       font-style: italic;
+      margin: 0px;
     }
   }
 }
@@ -226,63 +180,6 @@ nav {
     background-color: #6366f1;
     color: white;
     padding: 5px 25px;
-  }
-}
-
-#about-section {
-  text-align: center;
-  background: radial-gradient(circle, #0f141b 50%, rgba(255, 0, 0, 0) 100%);
-  padding: 50px 0;
-  margin-bottom: 50px;
-  h2 {
-    font-size: 40px;
-  }
-  p {
-    margin: 50px;
-    font-size: 18px;
-    color: #838aa7;
-    word-spacing: 2px;
-  }
-}
-
-#team-section {
-  text-align: center;
-  background: radial-gradient(circle, #0f141b 50%, rgba(255, 0, 0, 0) 100%);
-  margin-bottom: 50px;
-  h2 {
-    font-size: 40px;
-  }
-  .card-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-top: 50px;
-  }
-  .team-card {
-    width: 50%;
-    display: flex;
-    margin: 20px 0;
-    padding: 0 50px;
-    word-spacing: 2px;
-  }
-  .image-wrapper {
-    border-radius: 10px;
-    width: 50%;
-    height: 200px;
-    margin: 0;
-    img {
-      border-radius: 10px;
-    }
-  }
-  .member-detail {
-    display: flex;
-    flex-direction: column;
-    margin-left: 50px;
-    max-width: 40%;
-    :nth-child(3) {
-      text-align: right;
-      font-style: italic;
-    }
   }
 }
 
