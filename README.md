@@ -1,4 +1,4 @@
-# 📝 The Posting Hub – A Developer-Focused Blog Platform
+# 📝 The Posting Hub
 
 A full-stack Django-based web application that enables developers to share posts, interact through likes and comments, and engage with a vibrant coding community.
 
